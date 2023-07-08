@@ -67,12 +67,19 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body text-start">
-                                        <p class="smaller-text"><strong>Feast:</strong> {{ day[event]["feast"] }}</p>
-                                        <p class="smaller-text">Rank: {{ day[event]["rank"][1] }}</p>
+                                        <table class="smaller-text">
+                                            <tr><td>Feast:</td><td>{{ day[event]["feast"] }}</td></tr>
+                                            <tr><td>Rank:</td><td>{{ day[event]["rank"][1] }}</td></tr>
+                                            <tr><td>Color:</td><td>{{ day[event]["color"] }}</td></tr>
+                                            <tr><td>Office:</td><td>{{ day[event]["office_type"] }}</td></tr>
+                                            <tr><td>Mass:</td><td>{{ day[event]["mass"]["int"] }}</td></tr>
+                                            <tr><td>Com:</td><td>{{ day[event]["com"] | length }}</td></tr>
+                                            <tr><td>Fasting:</td><td>{{ day[event]["fasting"] }}</td></tr>
+                                        </table>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+                                        <a href="https://github.com/corei8/ordotools/issues/new/choose" type="button" class="btn btn-primary">Submit an Issue</a>
                                     </div>
                                 </div>
                             </div>
