@@ -38,7 +38,7 @@
                     {% else %}
                         {% set shading = "bg-light" %}
                     {% endif %}
-                    <div class="col col-h p-1 text-break fw-light d-flex flex-column justify-content-between {{ shading }}">
+                    <div type="button" class="col col-h p-1 text-break fw-light d-flex flex-column justify-content-between {{ shading }}" data-bs-toggle="modal" data-bs-target="#{{ event }}">
                         <div class="w-100 p-1 smaller-text">
                             <strong class="text-muted">
                                 {{ event }}
@@ -57,7 +57,25 @@
                             {% else %}
                                 <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" height="12em" width="12em" style="background: transparent">
                             {% endif %}
-                    </div>
+                        </div>
+                        </div>
+                        <div class="modal fade" id="{{ event }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel">{{ month }} {{ event }}, {{ year }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-start">
+                                        <p class="smaller-text"><strong>Feast:</strong> {{ day[event]["feast"] }}</p>
+                                        <p class="smaller-text">Rank: {{ day[event]["rank"][1] }}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+                                    </div>
+                                </div>
+                            </div>
                 {% endfor %}
                 </div>
             {% else %}

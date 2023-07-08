@@ -40,6 +40,7 @@ def calendar(year, month):
         "May", "June", "July", "August", "September",
         "October", "November", "December"
     ]
+    # TODO: add "next" and "previous" buttons to the picker
     raw = ordotools.LiturgicalCalendar(year=int(year), diocese="roman").build()
     data = PrintCalendar(month, raw).build_month
     months.remove(month)
