@@ -13,7 +13,7 @@
             <form action="{{ url_for('get_month') }}" method="post">
                 <div class="mt-3 text-start d-flex flex-row">
                     <h3 class="pt-1">
-                        <select class="select input" name="month" method="GET">
+                        <select class="select" name="month" method="GET">
                             <option value="{{ month }}" selected>{{ month }}</option>
                                 {% for m in months %}
                                     <option value="{{ m }}">{{ m }}</option>
@@ -22,7 +22,7 @@
                     </h3>
                     <h3 class="pt-1">&nbsp;</h3>
                     <h3 class="pt-1">
-                        <input class="select input" type="text" id="year" name="year" placeholder="{{ year }}" value="{{ request.form['year'] }}">
+                        <input class="select" type="number" min="1955" max="3000" step="1" id="year" name="year" placeholder="{{ year }}" value="{{ year }}">
                     </h3>
                     <input class="submit select" type="submit" value="Go">
                 </div>
