@@ -6,10 +6,75 @@
         <title>{{ title }} | Ordo.media</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css')}}">
     </head>
     <body>
         <div class="container-md">
-            <h1>Calendar</h1>
+            <form action="{{ url_for('get_month') }}" method="post">
+                <div class="mt-3 text-start d-flex flex-row">
+                    <h3 class="pt-1">
+                        <select class="select input" name="month" method="GET">
+                            <option value="{{ month }}" selected>{{ month }}</option>
+                                {% for m in months %}
+                                    <option value="{{ m }}">{{ m }}</option>
+                                {% endfor %}
+                        </select>
+                    </h3>
+                    <h3 class="pt-1">&nbsp;</h3>
+                    <h3 class="pt-1">
+                        <input class="select input" type="text" id="year" name="year" placeholder="{{ year }}" value="{{ request.form['year'] }}">
+                    </h3>
+                    <input class="submit select" type="submit" value="Go">
+                </div>
+            </form>
+            <div class="row w-100 m-0 rounded-top bg-primary">
+                <div class="col bg-primary text-white p-1 text-center rounded">Sunday</div>
+                <div class="col bg-primary text-white p-1 text-center">Monday</div>
+                <div class="col bg-primary text-white p-1 text-center">Tuesday</div>
+                <div class="col bg-primary text-white p-1 text-center">Wednesday</div>
+                <div class="col bg-primary text-white p-1 text-center">Thursday</div>
+                <div class="col bg-primary text-white p-1 text-center">Friday</div>
+                <div class="col bg-primary text-white p-1 text-center rounded">Saturday</div>
+            </div>
+            {% for week in data %}
+                <div class="row w-100 m-0 border empty_dates">
+                    {% for day in week %}
+                        {% if day is mapping %}
+                            {% for event in day %}
+                                {% set shading = "bg-body" %}
+                                {% if event % 2 == 0 %}
+                                    {% set shading = "bg-body" %}
+                                {% else %}
+                                    {% set shading = "bg-light" %}
+                                {% endif %}
+                                <div class="col col-h p-1 text-break fw-light d-flex flex-column justify-content-between {{ shading }}">
+                                    <div class="w-100 p-1 smaller-text">
+                                        <strong class="text-muted">
+                                            {{ event }}
+                                        </strong>
+                                    </div>
+                                    <div class="text-start w-100 smaller-text">
+                                        {{ day[event]["feast"] }}
+                                    </div>
+                                    <div class="text-start smaller-text" style="color: red;">
+                                        {{ day[event]["rank"][1] }}
+                                    </div>
+                                    <div class="text-end w-100 p-1 d-flex flex-row justify-content-between align-items-end" height="16em">
+                                        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" height="12em" width="12em" style="border: solid 1px black; border-radius: 50%; background: {{ day[event]['color'] }}">
+                                        {% if day[event]["fasting"] is true %}
+                                            <img src="{{ url_for('static', filename='images/full_fish.png') }}" height="12em">
+                                        {% else %}
+                                            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" height="12em" width="12em" style="background: transparent">
+                                        {% endif %}
+                                </div>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="col col-h p-1 text-break fw-light d-flex flex-column justify-content-between"> </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
         </div>
     </body>
 </html>
