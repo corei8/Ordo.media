@@ -40,15 +40,28 @@ p,li {
   min-height: 9.5em !important;
 }
 
-.select {
+.form-input {
   border: none;
   cursor: pointer;
-  width: 6em;
+  min-width: 1em;
   background: transparent;
+  appearance:none;
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	-ms-appearance:none;
 }
 
 .submit {
+  color: black;
+  height: 3em;
+  width: 3em;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.submit:hover {
   color: blue;
+  background: lightgrey;
 }
 
 section {
@@ -62,7 +75,7 @@ section {
   scroll-snap-stop: always !important;
 }
 
-// https://stackoverflow.com/a/43186214/10880347
+/* https://stackoverflow.com/a/43186214/10880347 */
 ::-webkit-scrollbar {
     width: 0px;
     background: transparent; /* make scrollbar transparent */
@@ -71,4 +84,3 @@ section {
 .scroller section {
     scroll-snap-align: start;
 }
-

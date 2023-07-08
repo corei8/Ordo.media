@@ -44,7 +44,7 @@ def calendar(year, month):
     data = PrintCalendar(month, raw).build_month
     months.remove(month)
     return render_template(
-        "base.html",
+        "calendar.html",
         title="Calendar",
         month=month,
         year=year,
