@@ -24,7 +24,7 @@ p,li {
 
 }
 
-.smaller-text {
+.smaller-text, table {
   font-size: var(--step--2);
 }
 

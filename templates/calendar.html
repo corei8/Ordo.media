@@ -66,21 +66,28 @@
                                         <h5 class="modal-title" id="staticBackdropLabel">{{ month }} {{ event }}, {{ year }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body text-start">
-                                        <table class="smaller-text">
-                                            <tr><td>Feast:</td><td>{{ day[event]["feast"] }}</td></tr>
-                                            <tr><td>Rank:</td><td>{{ day[event]["rank"][1] }}</td></tr>
-                                            <tr><td>Color:</td><td>{{ day[event]["color"] }}</td></tr>
-                                            <tr><td>Office:</td><td>{{ day[event]["office_type"] }}</td></tr>
-                                            <tr><td>Mass:</td><td>{{ day[event]["mass"]["int"] }}</td></tr>
-                                            <tr><td>Com:</td><td>{{ day[event]["com"] | length }}</td></tr>
-                                            <tr><td>Fasting:</td><td>{{ day[event]["fasting"] }}</td></tr>
-                                        </table>
+                                    <div class="modal-body text-start" id="{{ month }}{{ event }}">
+<table>
+    <tr><td>Feast:</td><td>{{ day[event]["feast"] }}</td></tr>
+    <tr><td>Rank:</td><td>{{ day[event]["rank"][1] }}</td></tr>
+    <tr><td>Color:</td><td>{{ day[event]["color"] }}</td></tr>
+    <tr><td>Office:</td><td>{{ day[event]["office_type"] }}</td></tr>
+    <tr><td>Mass:</td><td>{{ day[event]["mass"]["int"] }}</td></tr>
+    <tr><td>Com:</td><td>{{ day[event]["com"] | length }}</td></tr>
+    <tr><td>Fasting:</td><td>{{ day[event]["fasting"] }}</td></tr>
+</table>
                                     </div>
                                     <div class="modal-footer">
                                         <!-- TODO: make the issue content automated -->
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <a href="https://github.com/corei8/ordotools/issues/new?title=Bug%20on%20{{ month }}%20{{ event }},%20{{ year }}&body=" target="_blank" type="button" class="btn btn-primary">Submit an Issue</a>
+                                        <a href="" target="_blank" id="{{ month }}{{ event }}{{ year }}" type="button" class="btn btn-primary">Submit an Issue</a>
+                                        <script>
+                                            var urlFront = "https://github.com/corei8/ordotools/issues/new?title=Bug%20on%20{{ month }}%20{{ event }},%20{{ year }}&body="
+                                            var theTable = document.getElementById("{{ month }}{{ event }}").innerHTML.trim()
+                                            var urlTable = encodeURIComponent(theTable)
+                                            var mdSeparator = encodeURIComponent("\r\r\r---\r\r")
+                                            document.getElementById("{{ month }}{{ event }}{{ year }}").href = urlFront+mdSeparator+urlTable;
+                                        </script>
                                     </div>
                                 </div>
                             </div>
