@@ -37,7 +37,8 @@ p,li {
 }
 
 select > option {
-  text-align: right;
+  /* FIXME: this is not working on Safari */
+  text-align: right!important;
 }
 
 td:first-child {
@@ -46,17 +47,25 @@ td:first-child {
 
 .col-h {
   min-height: 9.5em !important;
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+}
+
+.col:hover {
+  opacity: .90;
 }
 
 .form-input {
   border: none;
-  cursor: pointer;
+  /* cursor: pointer; */
   min-width: 1em;
   background: transparent;
   appearance:none;
-	-webkit-appearance:none;
-	-moz-appearance:none;
-	-ms-appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  -ms-appearance:none;
 }
 
 .submit {
