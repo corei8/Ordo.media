@@ -6,10 +6,14 @@ from flask import request
 import ordotools
 from printcalendar import PrintCalendar
 from datetime import datetime
+from flask_minify import Minify, decorators as minify_decorators
 
 app = Flask(__name__)
+Minify(app=app, passive=True)
+
 
 @app.route("/")
+@minify_decorators.minify(html=True, js=True, cssless=True)
 def home():
     """
     Eventually, have the home page be a proper landing page.
@@ -21,6 +25,7 @@ def home():
     )
 
 @app.route("/get_month", methods=("GET", "POST"))
+@minify_decorators.minify(html=True, js=True, cssless=True)
 def get_month():
     if request.method == 'POST':
         year = request.form['year']
@@ -34,6 +39,7 @@ def get_month():
         return redirect(url_for('home'))
 
 @app.route("/<year>/<month>", methods=("GET", "POST"))
+@minify_decorators.minify(html=True, js=True, cssless=True)
 def calendar(year, month):
     months = [
         "January", "February", "March", "April",
