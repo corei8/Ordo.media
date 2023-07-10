@@ -13,7 +13,6 @@ Minify(app=app, passive=True)
 
 
 @app.route("/")
-@minify_decorators.minify(html=True, js=True, cssless=True)
 def home():
     """
     Eventually, have the home page be a proper landing page.
@@ -25,7 +24,6 @@ def home():
     )
 
 @app.route("/get_month", methods=("GET", "POST"))
-@minify_decorators.minify(html=True, js=True, cssless=True)
 def get_month():
     if request.method == 'POST':
         year = request.form['year']
