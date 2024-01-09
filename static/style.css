@@ -1,0 +1,158 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+main {
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-item: stretch;
+  align-content: stretch;
+  flex-grow: 1;
+}
+
+header {
+  background-color: white;
+  top: 0;
+  color: #000;
+  padding-top: 1em;
+  padding-right: 1em;
+  padding-left: 1em;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-item: flex-end;
+  border-bottom: solid 1px gray;
+}
+
+.weekdays {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1em;
+  margin-bottom: .25em;
+  padding-bottom: 0;
+  font-size: 10px;
+  font-weight: bold;
+  color: #888;
+}
+
+.calendar {
+  background: lightgray;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  /* There are at most 6 weeks in a month, but use 5 for now */
+  grid-auto-rows: calc(100% / 5);
+  /* scroll snapping */
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.calendar .day {
+  scroll-snap-align: start;
+}
+
+.day {
+  background: #eee;
+  /* border: .5px solid gray; */
+  border: .5px solid lightgray;
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-items: stretch;
+  flex-wrap: wrap;
+  transition: background 100ms;
+}
+
+.today {
+  font-weight: bold;
+  /* padding: .1em; */
+  /* display: block; */
+  /* width: 1em; */
+  /* background: orange; */
+  /* border: solid .33px black; */
+  /* border-radius: 50%; */
+}
+
+.border-top {
+  border-top: .5px solid black;
+}
+.border-bottom {
+  border-bottom: .5px solid black;
+}
+.border-end {
+  border-right: .5px solid black;
+}
+.border-front {
+  border-left: .5px solid black;
+}
+
+.current-month {
+  background: white;
+}
+
+.day-number {
+  width: 100%;
+  padding: .5em;
+  font-size: 18px;
+}
+
+.hidden-info {
+  display: block;
+  font-size: 0pt;
+  height: 0;
+  width: 0;
+}
+
+.feast {
+  padding: .5em;
+  width: 100%;
+  /* display: flex; */
+  /* align-items: center; */
+}
+
+.rank {
+  font-weight: light;
+  font-size: .75em;
+}
+
+.rank:before {
+  content: ' ';
+  display: block;
+}
+
+.feast-status {
+  width: 100%;
+  padding: .5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.feast-status img {
+  border: solid .5px black;
+  border-radius: 50%;
+  height: .5em;
+  width: auto;
+}
+
+@media (max-width: 500px) {
+  .calendar {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
+  }
+  .calendar div.day {
+    width: calc(100% - 1px);
+    min-height: calc(100% / 3)!important;
+  }
+  .weekdays {
+    display: none;
+  }
+}

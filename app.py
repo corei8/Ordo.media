@@ -7,6 +7,7 @@ import ordotools
 from printcalendar import PrintCalendar
 from datetime import datetime
 from flask_minify import Minify, decorators as minify_decorators
+import sys
 
 app = Flask(__name__)
 Minify(app=app, passive=True)
@@ -20,7 +21,7 @@ def home():
     year = int(datetime.today().strftime("%Y"))
     month = datetime.today().strftime("%B")
     return redirect(
-        url_for("calendar", year=year, month=month)
+        url_for("new_calendar", year=year, month=month)
     )
 
 @app.route("/get_month", methods=("GET", "POST"))
@@ -36,7 +37,32 @@ def get_month():
     else:
         return redirect(url_for('home'))
 
-@app.route("/<year>/<month>", methods=("GET", "POST"))
+@app.route("/<int:year>", methods=("GET", "POST"))
+def get_year(year):
+    yr = int(year)
+    raw = ordotools.LiturgicalCalendar(year=yr, diocese="roman").build()
+    # TODO: make this month parameter optional.
+    data = PrintCalendar("january", raw).json_year
+    return data
+
+@app.route("/new/<year>/<month>", methods=("GET", "POST"))
+def new_calendar(year, month):
+    yr = int(year)
+    raw = []
+    for y in range(yr-1,yr+1):
+        raw.extend(ordotools.LiturgicalCalendar(year=y, diocese="roman").build())
+    data = PrintCalendar(month, raw).json_year
+    # print(data, file=sys.stderr)
+    return render_template(
+        "test.html",
+        title="Calendar",
+        month=month,
+        year=year,
+        data=data,
+    )
+
+
+# @app.route("/<year>/<month>", methods=("GET", "POST"))
 @minify_decorators.minify(html=True, js=True, cssless=True)
 def calendar(year, month):
     months = [

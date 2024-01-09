@@ -29,3 +29,15 @@ class PrintCalendar:
             month[-1].append([])
 
         return month
+
+    @property
+    def json_year(self):
+        year = {}
+        for feast in self.data:
+            year |= {str(feast.date).split(' ')[0]:{
+                'name':feast.feast,
+                'rank':feast.rank_v,
+                'color':feast.color,
+            }}
+        
+        return year
