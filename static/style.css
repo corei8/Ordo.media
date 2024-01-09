@@ -20,14 +20,18 @@ header {
   top: 0;
   color: #000;
   padding-top: 1em;
-  padding-right: 1em;
-  padding-left: 1em;
+  /* padding-right: 1em; */
+  /* padding-left: 1em; */
   max-width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-item: flex-end;
   border-bottom: solid 1px gray;
+}
+
+#dynamicMonth {
+  padding-left: 1em;
 }
 
 .weekdays {
@@ -49,6 +53,7 @@ header {
   grid-auto-rows: calc(100% / 5);
   /* scroll snapping */
   overflow-y: scroll;
+  scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
 }
 
@@ -66,7 +71,7 @@ header {
   justify-content: space-between;
   align-items: stretch;
   flex-wrap: wrap;
-  transition: background 100ms;
+  transition: background 50ms;
 }
 
 .today {

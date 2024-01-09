@@ -191,14 +191,17 @@ function loadDays(calendarDiv, increment) {
     requestDates(month[newMonth[0]], newMonth[1]);
     const newMonthDays = createMonthDays(newMonth[1], newMonth[0]);
     console.log("new days " + newMonthDays.length);
+    //const calendarDiv = document.getElementById("calendar");
+    //calendarLastChild = calendarDiv.children[calendarDiv.children.length - 1];
+    //calendarFirstChild = calendarDiv.children[0];
 
+    calendarDiv.style["scroll-snap-type"] = "none";
     if (increment > 0) {
-        console.log("adding the days after...")
         calendarDiv.append(...newMonthDays);
     } else {
-        console.log("adding the days before...")
         calendarDiv.prepend(...newMonthDays);
     };
+    calendarDiv.style["scroll-snap-type"] = "y mandatory";
 };
 
 function visibility(theElement) {
