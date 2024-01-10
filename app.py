@@ -10,6 +10,7 @@ from flask_minify import Minify, decorators as minify_decorators
 import sys
 
 app = Flask(__name__)
+app.run(debug=True, port=5000)
 Minify(app=app, passive=True)
 
 
