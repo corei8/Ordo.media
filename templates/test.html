@@ -156,8 +156,6 @@ function createMonthDays(year, month) {
 
 function incrementMonth(month, year, increment) {
     if (increment > 0) {
-        console.log("incrementing the month");
-        console.log(month);
         if (month == 11) {
             return [0, (year+increment)];
         } else {
@@ -174,18 +172,20 @@ function incrementMonth(month, year, increment) {
 
 function removeDaysFromDOM(direction) {
     let calendarDays = [...document.querySelectorAll('.day')];
-    console.log(`calendar days -> ${calendarDays}`);
-    for (let c = 0; c < calendarDays.length; c++) {
-        if (direction > 0) {
-            calendarDays = calendarDays;
-        } else {
-            calendarDays = calendarDays.reverse();
-        };
-        let dayDistance = calendarDays[c].getBoundingClientRect().top;
-        const calendarHeight = document.getElementById('calendar').offsetHeight;
-        if (Math.abs(dayDistance) >= 12*calendarHeight) {
-            dayDistance.remove();
-        };
+    if (direction > 0) {
+        calendarDays = calendarDays;
+    } else {
+        calendarDays = calendarDays.reverse();
+    };
+    //const calendarHeight = document.getElementById('calendar').offsetHeight;
+    i = 0;
+    while (document.querySelectorAll('.day').length > (6*7)*12) {
+        //if (Math.abs(dayDistance) >= 12*calendarHeight) {
+        console.log(calendarDays[i])
+        //&& i < calendarDiv.length-1
+        calendarDays[i].remove();
+        i++;
+        //};
     };
 };
 
@@ -300,7 +300,6 @@ for (let month = currentMonth - 1; month >= -1; month--) {
 };
 
 function scrollToCurrentMonth () {
-    console.log(`${MONTHS[currentMonth]}${currentYear}`);
     document.getElementById(`${MONTHS[currentMonth]}${currentYear}`).scrollIntoView();
 };
 
