@@ -172,6 +172,23 @@ function incrementMonth(month, year, increment) {
     };
 };
 
+function removeDaysFromDOM(direction) {
+    let calendarDays = [...document.querySelectorAll('.day')];
+    console.log(`calendar days -> ${calendarDays}`);
+    for (let c = 0; c < calendarDays.length; c++) {
+        if (direction > 0) {
+            calendarDays = calendarDays;
+        } else {
+            calendarDays = calendarDays.reverse();
+        };
+        let dayDistance = calendarDays[c].getBoundingClientRect().top;
+        const calendarHeight = document.getElementById('calendar').offsetHeight;
+        if (Math.abs(dayDistance) >= 12*calendarHeight) {
+            dayDistance.remove();
+        };
+    };
+};
+
 function loadDays(calendarDiv, increment) {
     const referenceDay = increment > 0 ? 'last-child' : 'first-child';
     const referenceInfo = calendarDiv.querySelector(`.day:${referenceDay} .hidden-info`).textContent;
@@ -189,6 +206,7 @@ function loadDays(calendarDiv, increment) {
     } else {
         calendarDiv.prepend(...newMonthDays);
     };
+    removeDaysFromDOM(increment);
     calendarDiv.style["scroll-snap-type"] = "y mandatory";
 };
 
