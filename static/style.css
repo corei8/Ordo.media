@@ -160,7 +160,6 @@ span.today {
   background: orange!important;
 }
 
-
 @media (max-width: 500px) {
   .calendar {
     display: flex;

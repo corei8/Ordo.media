@@ -177,15 +177,11 @@ function removeDaysFromDOM(direction) {
     } else {
         calendarDays = calendarDays.reverse();
     };
-    //const calendarHeight = document.getElementById('calendar').offsetHeight;
     i = 0;
     while (document.querySelectorAll('.day').length > (6*7)*12) {
-        //if (Math.abs(dayDistance) >= 12*calendarHeight) {
         console.log(calendarDays[i])
-        //&& i < calendarDiv.length-1
         calendarDays[i].remove();
         i++;
-        //};
     };
 };
 
