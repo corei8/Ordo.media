@@ -14,7 +14,7 @@ main {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  align-item: stretch;
+  align-items: stretch;
   align-content: stretch;
   flex-grow: 1;
 }
@@ -24,13 +24,10 @@ header {
   top: 0;
   color: #000;
   padding-top: 1em;
-  /* padding-right: 1em; */
-  /* padding-left: 1em; */
   max-width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-item: flex-end;
   border-bottom: solid 1px gray;
 }
 
@@ -132,23 +129,28 @@ header {
 }
 
 .color-container {
+  width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding-left: 1em;
-  padding-right: 1em;
 }
 
 .color-container img {
   display: block;
-  border: solid .5px black;
+  height: 1em;
+  border: .5px solid black;
   border-radius: 50%;
-  height: .5em;
-  width: auto;
+  margin-left: .5em;
+}
+
+.moon {
+  display: block;
+  height: 1em;
+  padding-right: .5em;
 }
 
 .today-bar {
   display: block;
+  bottom: 0;
   width: 100%;
   height: 5px;
   border-top-left-radius: 3px;

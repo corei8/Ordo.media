@@ -1,3 +1,34 @@
+import datetime
+import ephem
+
+def get_moons_in_year(year: int):
+  moons={}
+  date=ephem.Date(datetime.date(year,1,1))
+  while date.datetime().year==year:
+    date=ephem.next_full_moon(date)
+    moons |= {str(date):"🌕"}
+  date=ephem.Date(datetime.date(year,1,1))
+  while date.datetime().year==year:
+    date=ephem.previous_first_quarter_moon(date)
+    moons |= {str(date):"🌓"}
+  date=ephem.Date(datetime.date(year,1,1))
+  while date.datetime().year==year:
+    date=ephem.previous_last_quarter_moon(date)
+    moons |= {str(date):"🌗"}
+  date=ephem.Date(datetime.date(year,1,1))
+  while date.datetime().year==year:
+    date=ephem.next_new_moon(date)
+    moons |= {str(date):"🌑"}
+  return moons
+
+def moon_phase(date):
+    moons = get_moons_in_year(int(date.strftime('%Y')))
+    the_moons = {key.split(" ")[0]: val for key, val in moons.items()}
+    if date.strftime("%Y/%-m/%-d") in the_moons.keys():
+        return the_moons[date.strftime("%Y/%-m/%-d")]
+    else:
+        return ''
+
 class PrintCalendar:
     def __init__(self, month, data):
         self.data = data
@@ -38,6 +69,8 @@ class PrintCalendar:
                 'name':feast.feast,
                 'rank':feast.rank_v,
                 'color':feast.color,
-            }}
-        
+                'moon-phase':moon_phase(feast.date),
+            }
+                     }
+
         return year

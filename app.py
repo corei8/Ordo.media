@@ -19,7 +19,7 @@ def home():
         raw.extend(ordotools.LiturgicalCalendar(year=y, diocese="roman").build())
     data = PrintCalendar(month, raw).json_year
     return render_template(
-        "test.html",
+        "calendar.html",
         title="Calendar",
         month=month,
         year=year,

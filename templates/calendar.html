@@ -1,111 +1,22 @@
 {% extends "base.html" %}
-
 {% block content %}
-<form action="{{ url_for('get_month') }}" method="post">
-    <fieldset class="mt-3 text-start d-flex flex-row">
-        <h3 class="pt-1">
-            <select class="form-input" name="month" method="GET">
-                <option value="{{ month }}" selected>{{ month }}</option>
-                    {% for m in months %}
-                        <option value="{{ m }}">{{ m }}</option>
-                    {% endfor %}
-            </select>
-        </h3>
-        <h3 class="pt-1">&nbsp;</h3>
-        <h3 class="pt-1">
-            <input class="form-input" type="number" min="1955" max="3000" step="1" id="year" name="year" placeholder="{{ year }}" value="{{ year }}">
-        </h3>
-        <input class="submit form-input" type="submit" value="Go">
-    </fieldset>
-</form>
-<!-- <div class="row w-100 m-0 rounded-top bg-primary"> -->
-<!--     <div class="col bg-primary text-white p-1 text-center rounded">Sunday</div> -->
-<!--     <div class="col bg-primary text-white p-1 text-center">Monday</div> -->
-<!--     <div class="col bg-primary text-white p-1 text-center">Tuesday</div> -->
-<!--     <div class="col bg-primary text-white p-1 text-center">Wednesday</div> -->
-<!--     <div class="col bg-primary text-white p-1 text-center">Thursday</div> -->
-<!--     <div class="col bg-primary text-white p-1 text-center">Friday</div> -->
-<!--     <div class="col bg-primary text-white p-1 text-center rounded">Saturday</div> -->
-<!-- </div> -->
-<div class="row w-100 m-0 border-bottom">
-    <div class="col p-1 text-center">Sunday</div>
-    <div class="col p-1 text-center">Monday</div>
-    <div class="col p-1 text-center">Tuesday</div>
-    <div class="col p-1 text-center">Wednesday</div>
-    <div class="col p-1 text-center">Thursday</div>
-    <div class="col p-1 text-center">Friday</div>
-    <div class="col p-1 text-center">Saturday</div>
-</div>
-{% for week in data %}
-    <div class="row w-100 m-0 border empty_dates">
-        {% for day in week %}
-            {% if day is mapping %}
-                {% for event in day %}
-                    {% set shading = "bg-body" %}
-                    {% if event % 2 == 0 %}
-                        {% set shading = "bg-body" %}
-                    {% else %}
-                        {% set shading = "bg-light" %}
-                    {% endif %}
-                    <div type="button" class="col col-h p-1 text-break fw-light d-flex flex-column justify-content-between {{ shading }}" data-bs-toggle="modal" data-bs-target="#{{ event }}">
-                        <div class="w-100 p-1 smaller-text">
-                            <strong class="text-muted">
-                                {{ event }}
-                            </strong>
-                        </div>
-                        <div class="text-start w-100 smaller-text">
-                            {{ day[event].feast }}
-                        </div>
-                        <div class="text-start smaller-text" style="color: red;">
-                            {{ day[event].rank_v }}
-                        </div>
-                        <div class="text-end w-100 p-1 d-flex flex-row justify-content-between align-items-end" height="16em">
-                            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" height="12em" width="12em" style="border: solid 1px black; border-radius: 50%; background: {{ day[event].color }}">
-                            {% if day[event].fasting is true %}
-                                <img src="{{ url_for('static', filename='images/full_fish.png') }}" height="12em">
-                            {% else %}
-                                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" height="12em" width="12em" style="background: transparent">
-                            {% endif %}
-                        </div>
-                        </div>
-                        <div class="modal fade" id="{{ event }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="staticBackdropLabel">{{ month }} {{ event }}, {{ year }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body text-start" id="{{ month }}{{ event }}">
-<table>
-    <tr><td>Feast:</td><td>{{ day[event].feast }}</td></tr>
-    <tr><td>Rank:</td><td>{{ day[event].rank_v }}</td></tr>
-    <tr><td>Color:</td><td>{{ day[event].color }}</td></tr>
-    <tr><td>Office:</td><td>{{ day[event].office_type }}</td></tr>
-    <tr><td>Mass:</td><td>{{ day[event].mass["int"] }}</td></tr>
-    <tr><td>Com:</td><td>{{ day[event].com | length }}</td></tr>
-    <tr><td>Fasting:</td><td>{{ day[event].fasting }}</td></tr>
-</table>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <!-- TODO: make the issue content automated -->
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <a href="" target="_blank" id="{{ month }}{{ event }}{{ year }}" type="button" class="btn btn-primary">Submit an Issue</a>
-                                        <script>
-                                            var urlFront = "https://github.com/corei8/ordotools/issues/new?title=Bug%20on%20{{ month }}%20{{ event }},%20{{ year }}&body="
-                                            var theTable = document.getElementById("{{ month }}{{ event }}").innerHTML.trim()
-                                            var urlTable = encodeURIComponent(theTable)
-                                            var mdSeparator = encodeURIComponent("\r\r\r---\r\r")
-                                            document.getElementById("{{ month }}{{ event }}{{ year }}").href = urlFront+mdSeparator+urlTable;
-                                        </script>
-                                    </div>
-                                </div>
-                            </div>
-                {% endfor %}
-                </div>
-            {% else %}
-                <div class="col col-h p-1 text-break fw-light d-flex flex-column justify-content-between"> </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-{% endfor %}
+<main>
+    <header id="calendarTitle">
+        <div id="dynamicMonth">
+            <b>{{month}}</b> {{year}}
+        </div>
+        <div class="weekdays">
+            <span>Sunday</span> <span>Monday</span> <span>Tuesday</span> <span>Wednesday</span> <span>Thursday</span> <span>Friday</span> <span>Saturday</span> </div>
+    </header>
+    <div id="calendar" class="calendar"></div>
+</main>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+localStorage.setItem("scriptRoot", JSON.stringify({{ request.script_root|tojson }}));
+localStorage.setItem("data", JSON.stringify({{ data|tojson }}));
+</script>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+{% endblock scripts %}
+
