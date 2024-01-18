@@ -13,10 +13,10 @@
 {% endblock content %}
 
 {% block scripts %}
-<script>
+<script defer>
 localStorage.setItem("scriptRoot", JSON.stringify({{ request.script_root|tojson }}));
 localStorage.setItem("data", JSON.stringify({{ data|tojson }}));
 </script>
-<script src="{{ url_for('static', filename='main.js') }}"></script>
+<script src="{{ url_for('static', filename='main.js') }}" defer></script>
 {% endblock scripts %}
 

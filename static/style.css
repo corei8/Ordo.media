@@ -52,13 +52,12 @@ header {
   grid-template-columns: repeat(7, 1fr);
   /* There are at most 6 weeks in a month, but use 5 for now */
   grid-auto-rows: calc(100% / 5);
-  /* scroll snapping */
   overflow-y: scroll;
   scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
+  scroll-snap-type: y proximity;
 }
 
-.calendar .day {
+.snapper {
   scroll-snap-align: start;
 }
 
@@ -146,6 +145,8 @@ header {
   display: block;
   height: 1em;
   padding-right: .5em;
+  /* color: transparent; */
+  /* text-shadow: 0 0 0 gray; */
 }
 
 .today-bar {

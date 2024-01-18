@@ -70,20 +70,14 @@ function createDayElement(day, month, year) {
     const date = new Date(year, month, day);
     const dateFormatted = date.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
     const dateForJson = date.toISOString().split('T')[0];
-    if (day === 1) {
-        dayDiv.id = `${date.toLocaleDateString('en-US',{month: 'long'})}${date.toLocaleDateString('en-US',{year: 'numeric'})}`;
-    };
+    if (day === 1) { dayDiv.id = `${date.toLocaleDateString('en-US',{month: 'long'})}${date.toLocaleDateString('en-US',{year: 'numeric'})}`; };
     if (currentDateId == date.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'}).split(' ').join('')) {
         dayDiv.id = currentDateId;
         dayNumberSpan.classList.add('today');
         dayDiv.classList.add('today');
     };
-    if (7 >= day || day >= 22) {
-        dayDiv.classList.add(...monthBorders(day, month, year))
-    };
-
-    // TODO: make sure that we ahve a today insert somewhere...
-
+    if (7 >= day || day >= 22) { dayDiv.classList.add(...monthBorders(day, month, year)) };
+    if (date.getDay() == 0) { dayDiv.classList.add('snapper'); };
 
     const feastInformationDiv = document.createElement('div');
     feastInformationDiv.classList.add('feast');
@@ -109,11 +103,12 @@ function createDayElement(day, month, year) {
 
     const feastColor = document.createElement('img');
     feastColor.src = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
-    feastColor.style.background = calendarData[dateForJson]['color']
+    feastColor.alt = calendarData[dateForJson]['color'];
+    feastColor.style.background = calendarData[dateForJson]['color'];
     moonAndColor.appendChild(feastColor);
 
     const moonPhase = document.createElement('div');
-    moonPhase.classList.add('moon')
+    moonPhase.classList.add('moon');
     moonPhase.textContent = calendarData[dateForJson]['moon-phase'];
     moonAndColor.appendChild(moonPhase);
 
@@ -126,6 +121,28 @@ function createDayElement(day, month, year) {
 
     return dayDiv;
 }
+
+function removeDaysFromDOM(direction) {
+    // TODO: we have to make sure that we get rid of one month at a time.
+    // NOTE: all the first days of the month have the class "snapper"
+    // This might get a bit tricky...
+    // 1. We have to get all the first days of the Month.
+    // 2. Find the distance between the days.
+    // 3. Delete the days by group.
+    let calendarDays = [...document.querySelectorAll('.day')];
+    if (direction > 0) {
+        calendarDays = calendarDays;
+    } else {
+        calendarDays = calendarDays.reverse();
+    };
+    i = 0;
+    // FIX: this issue we are having here is that the scroll position is begin adjusted
+    // over too great a distance, which causes the whole screen to jump.
+    while (document.querySelectorAll('.day').length > (6*7)*12) {
+        calendarDays[i].remove();
+        i++;
+    };
+};
 
 function createMonthDays(year, month) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -158,21 +175,6 @@ function incrementMonth(month, year, increment) {
     };
 };
 
-function removeDaysFromDOM(direction) {
-    let calendarDays = [...document.querySelectorAll('.day')];
-    if (direction > 0) {
-        calendarDays = calendarDays;
-    } else {
-        calendarDays = calendarDays.reverse();
-    };
-    i = 0;
-    while (document.querySelectorAll('.day').length > (6*7)*12) {
-        console.log(calendarDays[i])
-        calendarDays[i].remove();
-        i++;
-    };
-};
-
 function loadDays(calendarDiv, increment) {
     const referenceDay = increment > 0 ? 'last-child' : 'first-child';
     const referenceInfo = calendarDiv.querySelector(`.day:${referenceDay} .hidden-info`).textContent;
@@ -181,7 +183,6 @@ function loadDays(calendarDiv, increment) {
     const newMonth = incrementMonth(referenceDate.getMonth(), referenceDate.getFullYear(), increment);
 
     requestDates(MONTHS[newMonth[0]], newMonth[1]);
-
     const newMonthDays = createMonthDays(newMonth[1], newMonth[0]);
 
     calendarDiv.style["scroll-snap-type"] = "none";
@@ -270,6 +271,12 @@ function onScroll() {
     debounce(updateHeader, 250)();
 };
 
+function scrollToCurrentMonth () {
+    document.getElementById(`${MONTHS[currentMonth]}${currentYear}`).scrollIntoView();
+};
+
+const startTime = performance.now()
+
 const calendarDiv = document.querySelector('.calendar');
 const currentMonthDays = createMonthDays(currentYear, currentMonth);
 calendarDiv.append(...currentMonthDays);
@@ -283,10 +290,11 @@ for (let month = currentMonth - 1; month >= -1; month--) {
     calendarDiv.prepend(...monthDays);
 };
 
-function scrollToCurrentMonth () {
-    document.getElementById(`${MONTHS[currentMonth]}${currentYear}`).scrollIntoView();
-};
-
 document.getElementById('calendar').addEventListener('scroll', onScroll);
 //document.getElementById(currentDateId).scrollIntoView();
 scrollToCurrentMonth();
+
+const endTime = performance.now()
+
+console.log(`Performance: ${endTime - startTime} milliseconds`)
+
