@@ -5,6 +5,7 @@ from printcalendar import PrintCalendar
 from datetime import datetime
 from flask_minify import Minify, decorators as minify_decorators
 
+
 app = Flask(__name__)
 Minify(app=app, passive=True)
 

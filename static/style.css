@@ -1,13 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,400;1,100;1,400&display=swap');
+
 * {
   min-width: 0;
+  margin: 0;
+}
+
+:root {
+  --white: #FFFFFF;
+  --green: #2E7D32;
+  --red: #E53935;
+  --purple: #9C27B0;
+  --pink: #F8BBD0;
+  --black: #000000;
+  --fasting: #E1BEE7;
+  --background: #BDBDBD;
+  --foreground: #000000;
+  --border-width: .5px;
+  --border-compensation: calc(var(--border-width) * 2 * 6);
+  --header-height: 5vh;
+  --calendar-height: calc(100vh - var(--header-height) - var(--border-compensation));
 }
 
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
 }
 
 main {
+  font-family: 'Noto Sans', sans-serif;
+  background: black;
   top: 0;
   width: 100vw;
   height: 100vh;
@@ -22,7 +42,8 @@ main {
 header {
   background-color: white;
   top: 0;
-  color: #000;
+  height: var(--header-height);
+  color: var(--foreground);
   padding-top: 1em;
   max-width: 100%;
   display: flex;
@@ -46,27 +67,39 @@ header {
   color: #888;
 }
 
+/*** CALENDAR STYLING ***/
+
 .calendar {
-  background: lightgray;
+  background: var(--background);
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.month {
+  scroll-snap-align: start;
+  min-height: calc(var(--calendar-height));
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  /* There are at most 6 weeks in a month, but use 5 for now */
-  grid-auto-rows: calc(100% / 5);
-  overflow-y: scroll;
-  scroll-behavior: smooth;
-  scroll-snap-type: y proximity;
+  grid-template-rows: repeat(6, 1fr);
 }
 
-.snapper {
-  scroll-snap-align: start;
+.five-weeks {
+  margin-bottom: calc(-2 * (var(--calendar-height) / 6));
 }
+
+.six-weeks {
+  margin-bottom: calc(-1 * (var(--calendar-height) / 6));
+}
+
+/* .snapper { */
+/*   scroll-snap-align: start; */
+/* } */
 
 .day {
-  background: #eee;
-  border: .5px solid lightgray;
+  border: var(--border-width) solid darkgrey;
+  background: var(--background);
   display: flex;
   flex-direction: row;
-  flex-grow: 1;
   justify-content: space-between;
   align-content: space-between;
   flex-wrap: wrap;
@@ -86,7 +119,9 @@ header {
   border-left: .5px solid black;
 }
 
-.current-month {
+/*** FEAST DAY STYLING ***/
+
+.current-month > div.day {
   background: white;
 }
 
@@ -133,20 +168,43 @@ header {
   justify-content: space-between;
 }
 
-.color-container img {
+.color {
   display: block;
   height: 1em;
+  width: 1em;
   border: .5px solid black;
   border-radius: 50%;
   margin-left: .5em;
+}
+
+.white {
+  background: var(--white);
+}
+
+.green {
+  background: var(--green);
+}
+
+.red {
+  background: var(--red);
+}
+
+.purple {
+  background: var(--purple);
+}
+
+.pink {
+  background: var(--pink);
+}
+
+.black {
+  background: var(--black);
 }
 
 .moon {
   display: block;
   height: 1em;
   padding-right: .5em;
-  /* color: transparent; */
-  /* text-shadow: 0 0 0 gray; */
 }
 
 .today-bar {
@@ -163,6 +221,10 @@ span.today {
   font-weight: bold;
 }
 
+.today {
+  background: #FFF9C4!important;
+}
+
 .today > div.feast-status > .today-bar {
   background: orange!important;
 }
@@ -174,11 +236,21 @@ span.today {
     flex-grow: 1;
     width: 100%;
   }
+
   .calendar div.day {
     width: calc(100% - 1px);
-    min-height: calc(100% / 3)!important;
+    min-height: calc(100% / 5)!important;
   }
+
   .weekdays {
     display: none;
+  }
+
+  .day {
+    scroll-snap-align: middle;
+  }
+
+  .snapper {
+    scroll-snap-align: unset;
   }
 }

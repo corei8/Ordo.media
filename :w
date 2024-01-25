@@ -123,7 +123,6 @@ function createDayElement(day, month, year) {
     dayDiv.appendChild(feastInformationDiv)
     feastInformationDiv.appendChild(rankSpan)
     const hiddenInfoDiv = document.createElement('div');
-    // FIX: do we need to have the hidden-info?
     hiddenInfoDiv.classList.add('hidden-info');
     hiddenInfoDiv.textContent = dateFormatted;
     dayDiv.appendChild(hiddenInfoDiv);
@@ -138,10 +137,10 @@ function createDayElement(day, month, year) {
     moonPhase.classList.add('moon');
     moonPhase.textContent = calendarData[dateForJson]['moon-phase'];
     moonAndColor.appendChild(moonPhase);
-    // const isTodayBar = document.createElement('div');
-    // isTodayBar.classList.add('today-bar');
+    const isTodayBar = document.createElement('div');
+    isTodayBar.classList.add('today-bar');
     feastStatusDiv.appendChild(moonAndColor);
-    // feastStatusDiv.appendChild(isTodayBar);
+    feastStatusDiv.appendChild(isTodayBar);
     dayDiv.appendChild(feastStatusDiv);
     return dayDiv;
 }
@@ -194,8 +193,8 @@ function removeMonthsFromDOM(direction) {
         } else {
             theMonths = theMonths.reverse();
         };
+        console.log(`removing ${theMonths.length - 12} months from DOM`)
         theMonths.splice(0, theMonths.length - 12);
-        console.log(theMonths);
     };
 };
 
@@ -219,15 +218,13 @@ function updateHeader() {
             const dynamicMonth = document.getElementById('dynamicMonth');
             dynamicMonth.innerHTML = `<b>${theMonth}</b>&nbsp;${theYear}`;
             allMonths[i].classList.add('current-month');
-            for  (let y = (i + 1); y < allMonths.length; y++) {
-                allMonths[y].classList.remove('current-month');
-            }
             return;
         };
     };
 };
 
 function addMonthColor(month) {
+    // TODO: we can deprecate this now what we have the Months.
     const hiddenInfoDivs = hiddenDates();
     for (let i = 0; i < hiddenInfoDivs.length; i++) {
         if (hiddenInfoDivs[i].textContent.split(' ')[0] != month) {
@@ -280,10 +277,9 @@ function flankMonthsToInitial() {
 const startTime = performance.now()
 
 CALENDAR.appendChild(buildMonth(currentYear, currentMonth));
+scrollToCurrentMonth();
 flankMonthsToInitial();
 CALENDAR.addEventListener('scroll', onScroll);
-updateHeader();
-scrollToCurrentMonth();
 
 const endTime = performance.now();
 console.log(`Performance: ${(endTime - startTime).toFixed(2)} milliseconds`);
