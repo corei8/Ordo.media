@@ -191,7 +191,6 @@ function removeMonthsFromDOM(direction) {
             theMonths = theMonths.reverse();
         };
         theMonths.splice(0, theMonths.length - 12);
-        console.log(theMonths);
     };
 };
 
