@@ -6,6 +6,7 @@ const currentYear = currentDate.getFullYear();
 const currentMonth = currentDate.getMonth();
 const currentDateId = currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).split(' ').join('');
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const WEEKDAY = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
 function fetchJson(data) {
     fetch(data)
@@ -61,7 +62,11 @@ Date.prototype.getWeekOfMonth = function () {
     var firstDay = new Date(this.setDate(1)).getDay();
     var totalDays = new Date(this.getFullYear(), this.getMonth() + 1, 0).getDate();
     return Math.ceil((firstDay + totalDays) / 7);
-}
+};
+
+// TODO:
+// 1. find the last day of the month;
+// 2. if that day is a Saturday, we have to subtract one from the number of weeks per month
 
 function addMonthDiv(month, year) {
     const totalWeeks = new Date(year, month, 1).getWeekOfMonth();
@@ -99,9 +104,18 @@ function createDayElement(day, month, year) {
         dayDiv.style.gridColumnStart = positionOfFirstDay(year, month);
     };
     const dayNumberDiv = document.createElement('div');
-    const dayNumberSpan = document.createElement('span');
-    dayNumberDiv.classList.add('day-number');
-    dayNumberSpan.textContent = day;
+    const dayNumberSpan = document.createElement('div');
+    const dayWeekdaySpan = document.createElement('div');
+    dayNumberDiv.classList.add('date');
+    dayNumberSpan.classList.add('day-number');
+    dayWeekdaySpan.classList.add('day-weekday');
+    if (day === 1) {
+        dayNumberSpan.textContent = `${MONTHS[month]} ${day}`;
+    } else {
+        dayNumberSpan.textContent = day;
+    }
+    dayWeekdaySpan.textContent = WEEKDAY[date.getDay()];
+    dayNumberDiv.appendChild(dayWeekdaySpan);
     dayNumberDiv.appendChild(dayNumberSpan);
     dayDiv.appendChild(dayNumberDiv);
     const dateFormatted = date.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
@@ -122,10 +136,6 @@ function createDayElement(day, month, year) {
     }
     dayDiv.appendChild(feastInformationDiv)
     feastInformationDiv.appendChild(rankSpan)
-    // const hiddenInfoDiv = document.createElement('div');
-    // hiddenInfoDiv.classList.add('hidden-info');
-    // hiddenInfoDiv.textContent = dateFormatted;
-    // dayDiv.appendChild(hiddenInfoDiv);
     const feastStatusDiv = document.createElement('div');
     feastStatusDiv.classList.add('feast-status');
     const moonAndColor = document.createElement('div');

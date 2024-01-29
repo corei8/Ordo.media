@@ -54,7 +54,8 @@ body {
 }
 
 main {
-  background: black;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: white;
   top: 0;
   width: 100vw;
   height: 100vh;
@@ -141,16 +142,19 @@ header {
   color: black;
 }
 
-.day-number {
-  font-size: var(--step-1);
+.date {
+  display: flex;
   width: 100%;
-  /* padding: .5em; */
-  font-size: 18px;
+  justify-content: space-between;
+  font-size: var(--step-0);
+}
+
+.day-weekday {
+  visibility: hidden;
 }
 
 .feast {
   font-size: var(--step-0);
-  /* padding: .5em; */
   width: 100%;
 }
 
@@ -169,7 +173,6 @@ header {
   width: 100%;
   height: calc(2em - 3px);
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
   align-items: flex-end;
 }
@@ -212,16 +215,14 @@ span.today {
 
 /* TODO: update the styles for the new month layout */
 @media (max-width: 500px) {
-  .calendar {
+  .month {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-    width: 100%;
+    scroll-snap-align: none;
   }
 
-  .calendar div.day {
-    width: calc(100% - 1px);
-    min-height: calc(100% / 5)!important;
+  .five-weeks,.six-weeks {
+    margin-bottom: 0;
   }
 
   .weekdays {
@@ -230,9 +231,13 @@ span.today {
 
   .day {
     scroll-snap-align: middle;
+    height: 25vh;
+    /* TODO: get rid of the color calculations for mobile */
+    color: black !important;
+    font-size: var(--step-2)!important;
   }
 
-  .snapper {
-    scroll-snap-align: unset;
+  .day-weekday {
+    visibility: visible;
   }
 }
