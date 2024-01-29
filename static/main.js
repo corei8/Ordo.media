@@ -122,11 +122,10 @@ function createDayElement(day, month, year) {
     }
     dayDiv.appendChild(feastInformationDiv)
     feastInformationDiv.appendChild(rankSpan)
-    const hiddenInfoDiv = document.createElement('div');
-    // FIX: do we need to have the hidden-info?
-    hiddenInfoDiv.classList.add('hidden-info');
-    hiddenInfoDiv.textContent = dateFormatted;
-    dayDiv.appendChild(hiddenInfoDiv);
+    // const hiddenInfoDiv = document.createElement('div');
+    // hiddenInfoDiv.classList.add('hidden-info');
+    // hiddenInfoDiv.textContent = dateFormatted;
+    // dayDiv.appendChild(hiddenInfoDiv);
     const feastStatusDiv = document.createElement('div');
     feastStatusDiv.classList.add('feast-status');
     const moonAndColor = document.createElement('div');
@@ -138,10 +137,7 @@ function createDayElement(day, month, year) {
     moonPhase.classList.add('moon');
     moonPhase.textContent = calendarData[dateForJson]['moon-phase'];
     moonAndColor.appendChild(moonPhase);
-    // const isTodayBar = document.createElement('div');
-    // isTodayBar.classList.add('today-bar');
     feastStatusDiv.appendChild(moonAndColor);
-    // feastStatusDiv.appendChild(isTodayBar);
     dayDiv.appendChild(feastStatusDiv);
     return dayDiv;
 }
@@ -271,7 +267,13 @@ function scrollToCurrentMonth () {
 };
 
 function flankMonthsToInitial() {
+    // requestDates(MONTHS[currentMonth], currentYear)
     const monthBefore = incrementMonth(currentMonth, currentYear, -1);
+    // if (currentMonth == 0) {
+    //     requestDates(currentMonth-1, currentYear)
+    // } else if (currentMonth == 11) {
+    //     requestDates(+currentMonth+1, currentYear)
+    // }
     CALENDAR.prepend(buildMonth(monthBefore[1], monthBefore[0]));
     const monthAfter = incrementMonth(currentMonth, currentYear, 1);
     CALENDAR.append(buildMonth(monthAfter[1], monthAfter[0]));
@@ -281,6 +283,7 @@ const startTime = performance.now()
 
 CALENDAR.appendChild(buildMonth(currentYear, currentMonth));
 flankMonthsToInitial();
+// onScroll();
 CALENDAR.addEventListener('scroll', onScroll);
 updateHeader();
 scrollToCurrentMonth();
