@@ -2,8 +2,14 @@
 {% block content %}
 <main>
     <header id="calendarTitle">
-        <div id="dynamicMonth">
-            <b>{{month}}</b> {{year}}
+        <div>
+            <div id="dynamicMonth">
+                <b>{{month}}</b> {{year}}
+            </div>
+            <div class="warning">
+                ⚠ Warning! This calendar is running ordotools v0.0.30-alpha, a
+                software still in development. There are known inaccuracies.
+            </div>
         </div>
         <div class="weekdays">
             <span>Sunday</span> <span>Monday</span> <span>Tuesday</span> <span>Wednesday</span> <span>Thursday</span> <span>Friday</span> <span>Saturday</span> </div>
