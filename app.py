@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import render_template
+from flask import send_file
 import ordotools
 from printcalendar import PrintCalendar
 from datetime import datetime
@@ -9,7 +10,9 @@ from flask_minify import Minify, decorators as minify_decorators
 app = Flask(__name__)
 Minify(app=app, passive=True)
 
-
+@app.route("/manifest.json")
+def serve_manifest():
+    return send_file('manifest.json', mimetype="application/manifest+json")
 
 @app.route("/")
 @minify_decorators.minify(html=True, js=True, cssless=True)
