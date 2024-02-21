@@ -172,7 +172,6 @@ header > div:first-child {
 .rank {
   font-size: var(--step--1);
   font-weight: light;
-  /* font-size: .75em; */
 }
 
 .rank:before {
@@ -200,7 +199,6 @@ header > div:first-child {
   width: 1em;
   border: .5px solid black;
   border-radius: 50%;
-  /* margin-left: .5em; */
 }
 
 .white  { background: var(--white); }
@@ -213,7 +211,6 @@ header > div:first-child {
 .moon {
   display: block;
   height: 1em;
-  /* padding-right: .5em; */
 }
 
 span.today {
@@ -250,5 +247,34 @@ span.today {
 
   .day-weekday {
     visibility: visible;
+  }
+
+  header > div:first-child {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .warning {
+    /* padding-top: var(--space-s); */
+
+  }
+
+  .date, .day-weekday {
+    font-size: var(--step-1);
+  }
+
+  .day-weekday {
+    font-weight: light;
+  }
+
+  .feast {
+    font-size: var(--step-2);
+    /* width: 100%; */
+  }
+
+  .rank {
+    font-size: var(--step-0);
+    /* font-weight: light; */
   }
 }
