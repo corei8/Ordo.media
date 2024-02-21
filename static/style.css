@@ -4,15 +4,22 @@
 }
 
 :root {
+  /* liturgical colors */
   --white: #FFFFFF;
   --green: #2E7D32;
   --red: #E53935;
   --purple: #9C27B0;
   --pink: #F8BBD0;
   --black: #000000;
+
   --fasting: #E1BEE7;
-  --background: #BDBDBD;
-  --foreground: #FFFFFF;
+
+  --background: #FEFEFE;
+  --background-contrast: #D1C0A2;
+  --mid-tone: #7D7C74;
+  --foreground-contrast: #714133;
+  --foreground: #060606;
+
   --border-width: .5px;
   --border-compensation: calc(var(--border-width) * 2 * 6);
   --header-height: 5vh;
@@ -51,11 +58,12 @@
 
 body {
   font-family: 'Noto Sans', sans-serif;
+  background: var(--background);
 }
 
 main {
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  background: white;
+  /* background: var(--background); */
   top: 0;
   width: 100vw;
   height: 100vh;
@@ -69,7 +77,7 @@ main {
 }
 
 header {
-  background-color: var(--foreground);
+  background-color: var(--background);
   font-size: var(--step-1);
   top: 0;
   min-height: var(--header-height);
@@ -102,7 +110,7 @@ header > div:first-child {
   margin-top: var(--space-xs);
   font-size: var(--step--2);
   font-weight: bold;
-  color: #888;
+  color: var(--mid-tone);
 }
 
 /*** CALENDAR STYLING ***/
@@ -130,16 +138,16 @@ header > div:first-child {
 }
 
 .day {
-  border: var(--border-width) solid darkgrey;
-  background: var(--foreground);
-  color: var(--background);
+  border: var(--border-width) solid var(--mid-tone);
+  background: var(--background);
+  color: var(--mid-tone);
+  opacity: 0.7;
   padding: var(--space-2xs);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-content: space-between;
   flex-wrap: wrap;
-  /* transition: background 50ms; */
 }
 
 .border-top    { border-top: .5px solid black; }
@@ -150,7 +158,8 @@ header > div:first-child {
 /*** FEAST DAY STYLING ***/
 
 .current-month > div.day {
-  color: black;
+  color: var(--foreground);
+  opacity: 1;
 }
 
 .date {
@@ -199,6 +208,7 @@ header > div:first-child {
   width: 1em;
   border: .5px solid black;
   border-radius: 50%;
+  opacity: 0.85;
 }
 
 .white  { background: var(--white); }

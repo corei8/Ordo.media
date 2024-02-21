@@ -226,7 +226,7 @@ function updateHeader() {
             allMonths[i].classList.add('current-month');
             for  (let y = (i + 1); y < allMonths.length; y++) {
                 allMonths[y].classList.remove('current-month');
-            }
+            };
             return;
         };
     };

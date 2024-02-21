@@ -7,10 +7,11 @@
                 <b>{{month}}</b> {{year}}
             </div>
             <div class="warning">
-                ⚠ Warning! This calendar is running <a
-                    href="https://pypi.org/project/ordotools/">ordotools
-                    {{ ordotools_version }}</a>, a software still in development. There
-                are known inaccuracies.
+                ⚠ Warning! This calendar is running 
+                <a href="https://pypi.org/project/ordotools/">
+                    ordotools {{ ordotools_version }}
+                </a>,
+                a software still in development. There are known inaccuracies.
             </div>
         </div>
         <div class="weekdays">
@@ -22,8 +23,8 @@
 
 {% block scripts %}
 <script defer>
-localStorage.setItem("scriptRoot", JSON.stringify({{ request.script_root|tojson }}));
-localStorage.setItem("data", JSON.stringify({{ data|tojson }}));
+    localStorage.setItem("scriptRoot", JSON.stringify({{ request.script_root|tojson }}));
+    localStorage.setItem("data", JSON.stringify({{ data|tojson }}));
 </script>
 <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 {% endblock scripts %}
