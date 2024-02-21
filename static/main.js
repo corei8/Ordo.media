@@ -207,8 +207,11 @@ function removeMonthsFromDOM(direction) {
 function visibility(theElement) {
     const rect = theElement.getBoundingClientRect();
     const height = CALENDAR.offsetHeight;
-    if (Math.abs(rect.top) < height/2) {
-        return true;
+    if (rect.top < height/2) {
+        console.log("the top is in view");
+        if (rect.bottom > height/2) {
+            return true;
+        };
     } else {
         return false;
     };

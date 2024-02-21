@@ -81,7 +81,7 @@ header {
   font-size: var(--step-1);
   top: 0;
   min-height: var(--header-height);
-  color: black;
+  color: var(--foreground);
   padding-top: var(--space-2xs);
   max-width: 100%;
   display: flex;
