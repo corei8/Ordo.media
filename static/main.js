@@ -205,10 +205,10 @@ function removeMonthsFromDOM(direction) {
 };
 
 function visibility(theElement) {
+    // WARN: this might be using too much memory
     const rect = theElement.getBoundingClientRect();
     const height = CALENDAR.offsetHeight;
     if (rect.top < height/2) {
-        console.log("the top is in view");
         if (rect.bottom > height/2) {
             return true;
         };

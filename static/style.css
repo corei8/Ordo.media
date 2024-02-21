@@ -56,6 +56,11 @@
   --space-2xl-3xl: clamp(3rem, 2.386rem + 3.069vi, 6rem);
 }
 
+a {
+  color: var(--foreground-contrast);
+  text-decoration: none;
+}
+
 body {
   font-family: 'Noto Sans', sans-serif;
   background: var(--background);
@@ -114,6 +119,12 @@ header > div:first-child {
 }
 
 /*** CALENDAR STYLING ***/
+
+/* .calendar_container{ */
+/*   /1* max-height: 100%; *1/ */
+/*   overflow-y: scroll; */
+
+/* } */
 
 .calendar {
   background: var(--background);
