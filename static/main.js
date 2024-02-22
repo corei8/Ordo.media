@@ -59,9 +59,15 @@ function monthBorders(day, month, year) {
 };
 
 Date.prototype.getWeekOfMonth = function () {
-    var firstDay = new Date(this.setDate(1)).getDay();
-    var totalDays = new Date(this.getFullYear(), this.getMonth() + 1, 0).getDate();
-    return Math.ceil((firstDay + totalDays) / 7);
+    const firstDay = new Date(this.setDate(1)).getDay();
+    const lastDay = new Date(this.getFullYear(), this.getMonth() + 1, 0)
+    const totalDays = lastDay.getDate();
+    let adjust = 0;
+    if (lastDay.getDay() == 6) {
+        adjust = 1;
+        console.log("adjusting height")
+    };
+    return Math.ceil((firstDay + totalDays) / 7 + adjust);
 };
 
 // TODO:
