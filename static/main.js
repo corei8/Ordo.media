@@ -194,13 +194,13 @@ function loadDays(calendarDiv, increment) {
 
 function removeMonthsFromDOM(direction) {
     let theMonths = [...document.querySelectorAll('.month')];
-    if (theMonths.length > 10) {
+    if (theMonths.length > 5) {
         if (direction > 0) {
             theMonths = theMonths;
         } else {
             theMonths = theMonths.reverse();
         };
-        theMonths.splice(0, theMonths.length - 12);
+        CALENDAR.removeChild(theMonths[0]);
     };
 };
 

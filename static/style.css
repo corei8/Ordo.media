@@ -120,11 +120,17 @@ header > div:first-child {
 
 /*** CALENDAR STYLING ***/
 
-/* .calendar_container{ */
-/*   /1* max-height: 100%; *1/ */
-/*   overflow-y: scroll; */
+.calendar_container{
+  max-height: 100%;
+  overflow-y: scroll;
+  display: grid;
+  grid-template-columns: auto 15%;
+}
 
-/* } */
+.details {
+  border-left: solid var(--border-width) var(--mid-tone);
+  padding: var(--space-2xs);
+}
 
 .calendar {
   background: var(--background);
@@ -276,9 +282,12 @@ span.today {
     justify-content: space-between;
   }
 
-  .warning {
-    /* padding-top: var(--space-s); */
+  .calendar_container {
+    grid-template-columns: 100%;
+  }
 
+  .details {
+    display: none;
   }
 
   .date, .day-weekday {
