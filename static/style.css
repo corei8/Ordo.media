@@ -110,6 +110,13 @@ header > div:first-child {
 }
 
 .weekdays {
+  /* max-height: 100%; */
+  /* overflow-y: scroll; */
+  display: grid;
+  grid-template-columns: auto 15%;
+}
+
+.weekdays-container {
   display: flex;
   justify-content: space-around;
   margin-top: var(--space-xs);
@@ -130,6 +137,13 @@ header > div:first-child {
 .details {
   border-left: solid var(--border-width) var(--mid-tone);
   padding: var(--space-2xs);
+  font-size: var(--step--1);
+}
+
+.details > p {
+  font-size: var(--step--2);
+  color: var(--foreground-contrast);
+  padding-top: var(--space-xs);
 }
 
 .calendar {
@@ -192,6 +206,10 @@ header > div:first-child {
 }
 
 .day-weekday {
+  visibility: hidden;
+}
+
+.date-key {
   visibility: hidden;
 }
 

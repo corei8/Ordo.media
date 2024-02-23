@@ -65,14 +65,9 @@ Date.prototype.getWeekOfMonth = function () {
     let adjust = 0;
     if (lastDay.getDay() == 6) {
         adjust = 1;
-        console.log("adjusting height")
     };
     return Math.ceil((firstDay + totalDays) / 7 + adjust);
 };
-
-// TODO:
-// 1. find the last day of the month;
-// 2. if that day is a Saturday, we have to subtract one from the number of weeks per month
 
 function addMonthDiv(month, year) {
     const totalWeeks = new Date(year, month, 1).getWeekOfMonth();
@@ -126,6 +121,9 @@ function createDayElement(day, month, year) {
     dayDiv.appendChild(dayNumberDiv);
     const dateFormatted = date.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
     const dateForJson = date.toISOString().split('T')[0];
+
+    dayDiv.addEventListener("click", function() {displayDetails(dateForJson)}, false);
+
     if (currentDateId == dateFormatted.split(' ').join('')) {
         dayDiv.id = currentDateId;
         dayNumberSpan.classList.add('today');
@@ -140,6 +138,13 @@ function createDayElement(day, month, year) {
         feastInformationDiv.textContent = calendarData[dateForJson]['name'];
         rankSpan.textContent = calendarData[dateForJson]['rank'];
     }
+
+    // for fetching data for the aside
+    // const dataDateKey = document.createElement('span');
+    // dataDateKey.classList.add('date-key');
+    // dataDateKey.textContent = dateForJson;
+    // dayNumberDiv.appendChild(dataDateKey);
+
     dayDiv.appendChild(feastInformationDiv)
     feastInformationDiv.appendChild(rankSpan)
     const feastStatusDiv = document.createElement('div');
@@ -200,7 +205,7 @@ function loadDays(calendarDiv, increment) {
 
 function removeMonthsFromDOM(direction) {
     let theMonths = [...document.querySelectorAll('.month')];
-    if (theMonths.length > 5) {
+    if (theMonths.length > 10) {
         if (direction > 0) {
             theMonths = theMonths;
         } else {
@@ -285,13 +290,7 @@ function scrollToCurrentMonth () {
 };
 
 function flankMonthsToInitial() {
-    // requestDates(MONTHS[currentMonth], currentYear)
     const monthBefore = incrementMonth(currentMonth, currentYear, -1);
-    // if (currentMonth == 0) {
-    //     requestDates(currentMonth-1, currentYear)
-    // } else if (currentMonth == 11) {
-    //     requestDates(+currentMonth+1, currentYear)
-    // }
     CALENDAR.prepend(buildMonth(monthBefore[1], monthBefore[0]));
     const monthAfter = incrementMonth(currentMonth, currentYear, 1);
     CALENDAR.append(buildMonth(monthAfter[1], monthAfter[0]));
@@ -308,3 +307,12 @@ scrollToCurrentMonth();
 
 const endTime = performance.now();
 console.log(`Performance: ${(endTime - startTime).toFixed(2)} milliseconds`);
+
+function displayDetails(date) {
+    const detailsPane = document.getElementById("details");
+    detailsPane.querySelector(".details_date").textContent = date;
+    detailsPane.querySelector(".details_feast").textContent = calendarData[date]['name'];
+    detailsPane.querySelector(".details_rank").textContent = calendarData[date]['rank'];
+    detailsPane.querySelector(".details_color").textContent = calendarData[date]['color'];
+    detailsPane.querySelector(".details_commemoration").textContent = calendarData[date]['com'];
+};
