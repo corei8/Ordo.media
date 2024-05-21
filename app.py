@@ -31,7 +31,7 @@ def home():
         month=month,
         year=year,
         data=data,
-        ordotools_version="v0.0.30-alpha"
+        ordotools_version="v0.0.34-alpha"
     )
 
 @app.route("/<int:year>", methods=("GET", "POST"))
