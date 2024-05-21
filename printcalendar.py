@@ -42,10 +42,10 @@ class PrintCalendar:
     def json_year(self):
         return {
             str(feast.date).split(' ')[0]: {
-                'name':feast.feast,
+                'name':feast.name,
                 'rank':feast.rank_v,
                 'color':feast.color,
                 'moon-phase': self.moon_phase(feast.date),
-                'com':feast.com['feast'] if isinstance(type(feast.com), dict) else '...',
+                'com':feast.com_1['name'] if 'name' in feast.com_1.keys() else '',
             } for feast in self.data
         }

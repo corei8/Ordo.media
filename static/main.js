@@ -1,6 +1,7 @@
 let calendarData = JSON.parse(localStorage.getItem("data"));
 let SCRIPT_ROOT = JSON.parse(localStorage.getItem("scriptRoot"));
 const CALENDAR = document.getElementById('calendar');
+const calendarWindow = document.getElementById('calendarWindow');
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
 const currentMonth = currentDate.getMonth();
@@ -21,8 +22,7 @@ function requestDates(month, year) {
     let yearKeys = Object.keys(calendarData).sort();
     let firstYear = new Date(yearKeys[0]).toLocaleString('en-US', {year: 'numeric'});
     let lastYear  = new Date(yearKeys[yearKeys.length - 1]).toLocaleString('en-US', {year: 'numeric'});
-    if (year-1 == firstYear && month == "January") {
-        let newData = `${SCRIPT_ROOT}/${year-1}`;
+    if (year-1 == firstYear && month == "January") { let newData = `${SCRIPT_ROOT}/${year-1}`;
         fetchJson(newData);
     } else if (year == lastYear && month == "December") {
         let newData = `${SCRIPT_ROOT}/${parseInt(year)+1}`;
@@ -58,7 +58,7 @@ function monthBorders(day, month, year) {
     };
 };
 
-Date.prototype.getWeekOfMonth = function () {
+Date.prototype.getWeeksInMonth = function () {
     const firstDay = new Date(this.setDate(1)).getDay();
     const lastDay = new Date(this.getFullYear(), this.getMonth() + 1, 0)
     const totalDays = lastDay.getDate();
@@ -70,15 +70,20 @@ Date.prototype.getWeekOfMonth = function () {
 };
 
 function addMonthDiv(month, year) {
-    const totalWeeks = new Date(year, month, 1).getWeekOfMonth();
+    const totalWeeks = new Date(year, month, 1).getWeeksInMonth();
     const monthDiv = document.createElement('div');
     if (+month < 0) {
         month = MONTHS.length + parseInt(month);
     };
     const weeks = (totalWeeks == 6) ? 'six-weeks' : 'five-weeks';
-    if (totalWeeks == 6) {}
+    // if (totalWeeks == 6) {}
     monthDiv.classList.add('month', weeks);
     monthDiv.id = `${MONTHS[month]}-${year}`;
+    for (let week = 1; week < totalWeeks+1; week++) {
+        const aWeek = document.createElement('div')
+        aWeek.classList.add('week_'+week, 'week');
+        monthDiv.appendChild(aWeek);
+    };
     return monthDiv;
 };
 
@@ -97,6 +102,7 @@ function addElement(type, classname, content = '') {
 
 function createDayElement(day, month, year) {
     const date = new Date(year, month, day);
+    // console.log(date)
     const dayDiv = document.createElement('div');
     dayDiv.classList.add('day');
     if (day === 1) {
@@ -163,13 +169,23 @@ function createDayElement(day, month, year) {
     return dayDiv;
 }
 
+function getWeek(date) {
+  let monthStart = new Date(date);
+  monthStart.setDate(0);
+  let offset = (monthStart.getDay() + 1) % 7;
+  return Math.ceil((date.getDate() + offset) / 7)-1;
+}
 
-function buildMonth(year, month) {
-    const daysInMonths = new Date(year, month + 1, 0).getDate();
+function buildMonth(year, month, firstMonth=false) {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
     const theMonth = addMonthDiv(month, year);
-    for (let day = 1; day <= daysInMonths; day++) {
+    console.log(MONTHS[month])
+    for (let day = 1; day <= daysInMonth; day++) {
         let aDay = createDayElement(day, month, year);
-        theMonth.appendChild(aDay);
+        theMonth.children[getWeek(new Date(year, month, day))].appendChild(aDay);
+    };
+    if (firstMonth == true) {
+        theMonth.classList.add('current-month');
     };
     return theMonth;
 };
@@ -205,7 +221,7 @@ function loadDays(calendarDiv, increment) {
 
 function removeMonthsFromDOM(direction) {
     let theMonths = [...document.querySelectorAll('.month')];
-    if (theMonths.length > 10) {
+    if (theMonths.length > 5) {
         if (direction > 0) {
             theMonths = theMonths;
         } else {
@@ -215,47 +231,29 @@ function removeMonthsFromDOM(direction) {
     };
 };
 
-function visibility(theElement) {
-    // WARN: this might be using too much memory
-    const rect = theElement.getBoundingClientRect();
-    const height = CALENDAR.offsetHeight;
-    if (rect.top < height/2) {
-        if (rect.bottom > height/2) {
-            return true;
-        };
-    } else {
-        return false;
-    };
-};
-
 function updateHeader() {
     let allMonths = document.querySelectorAll('.month');
-    for (let i = 0; i < allMonths.length; i++) {
-        allMonths[i].classList.remove('current-month');
-        if (visibility(allMonths[i])) {
-            const theMonth = allMonths[i].id.split('-')[0];
-            const theYear = allMonths[i].id.split('-')[1];
-            const dynamicMonth = document.getElementById('dynamicMonth');
-            dynamicMonth.innerHTML = `<b>${theMonth}</b>&nbsp;${theYear}`;
-            allMonths[i].classList.add('current-month');
-            for  (let y = (i + 1); y < allMonths.length; y++) {
-                allMonths[y].classList.remove('current-month');
-            };
-            return;
-        };
-    };
+    try {
+        CALENDAR.querySelector('.current-month').classList.remove('current-month');
+    } catch(TypeError) { };
+    visibleMonth = allMonths[Math.floor(allMonths.length / 2)]
+    visibleMonth.classList.add('current-month');
+    const theMonth = visibleMonth.id.split('-')[0];
+    const theYear = visibleMonth.id.split('-')[1];
+    const dynamicMonth = document.getElementById('dynamicMonth');
+    dynamicMonth.innerHTML = `<b>${theMonth}</b>&nbsp;${theYear}`;
 };
 
-function addMonthColor(month) {
-    const hiddenInfoDivs = hiddenDates();
-    for (let i = 0; i < hiddenInfoDivs.length; i++) {
-        if (hiddenInfoDivs[i].textContent.split(' ')[0] != month) {
-            hiddenInfoDivs[i].parentElement.classList.remove('current-month');
-        } else {
-            hiddenInfoDivs[i].parentElement.classList.add('current-month');
-        };
-    };
-};
+// function addMonthColor(month) {
+//     const hiddenInfoDivs = hiddenDates();
+//     for (let i = 0; i < hiddenInfoDivs.length; i++) {
+//         if (hiddenInfoDivs[i].textContent.split(' ')[0] != month) {
+//             hiddenInfoDivs[i].parentElement.classList.remove('current-month');
+//         } else {
+//             hiddenInfoDivs[i].parentElement.classList.add('current-month');
+//         };
+//     };
+// };
 
 function debounce(func, delay) {
     let timeoutId;
@@ -267,20 +265,19 @@ function debounce(func, delay) {
     };
 };
 
-function updateDOM(direction, div) {
-    loadDays(div, direction);
+function updateDOM(direction) {
+    loadDays(CALENDAR, direction);
     removeMonthsFromDOM(direction);
 };
 
+function virtualizedScrolling () { };
+
 function onScroll() {
-    let direction;
     if (Math.abs(CALENDAR.firstChild.getBoundingClientRect().top) < 1*window.innerHeight) {
-        direction = -1;
-        updateDOM(direction, CALENDAR);
+        updateDOM(-1);
     };
     if (CALENDAR.lastChild.getBoundingClientRect().top <= 1*window.innerHeight) {
-        direction = 1;
-        updateDOM(direction, CALENDAR);
+        updateDOM(1);
     };
     debounce(updateHeader, 250)();
 };
@@ -289,24 +286,38 @@ function scrollToCurrentMonth () {
     document.getElementById(`${MONTHS[currentMonth]}-${currentYear}`).scrollIntoView();
 };
 
-function flankMonthsToInitial() {
+function scrollToCurrentDay () {
+    document.getElementsByClassName(`today`)[0].scrollIntoView();
+};
+
+function flankMonthsToInitial () {
     const monthBefore = incrementMonth(currentMonth, currentYear, -1);
     CALENDAR.prepend(buildMonth(monthBefore[1], monthBefore[0]));
     const monthAfter = incrementMonth(currentMonth, currentYear, 1);
     CALENDAR.append(buildMonth(monthAfter[1], monthAfter[0]));
 };
 
+
+// setTimeout(function() {
+//
 const startTime = performance.now()
 
-CALENDAR.appendChild(buildMonth(currentYear, currentMonth));
+CALENDAR.appendChild(buildMonth(currentYear, currentMonth, true));
 flankMonthsToInitial();
-// onScroll();
-CALENDAR.addEventListener('scroll', onScroll);
+calendarWindow.addEventListener('scroll', onScroll);
 updateHeader();
-scrollToCurrentMonth();
+
+let isMobile = window.matchMedia("only screen and (max-width: 500px)").matches;
+if (isMobile) {
+    scrollToCurrentDay();
+} else {
+    scrollToCurrentMonth();
+};
 
 const endTime = performance.now();
 console.log(`Performance: ${(endTime - startTime).toFixed(2)} milliseconds`);
+// }, 400);
+
 
 function displayDetails(date) {
     const detailsPane = document.getElementById("details");

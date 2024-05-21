@@ -67,11 +67,16 @@ body {
 }
 
 main {
+  position: fixed;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   /* background: var(--background); */
   top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
   width: 100vw;
-  height: 100vh;
+  max-height: 100vh;
   max-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -128,10 +133,43 @@ header > div:first-child {
 /*** CALENDAR STYLING ***/
 
 .calendar_container{
-  max-height: 100%;
-  overflow-y: scroll;
   display: grid;
   grid-template-columns: auto 15%;
+  overflow: auto;
+}
+
+.calendar_window {
+  height: 100%;
+  scrollbar-width: none;
+  overflow-y: scroll;
+  /* scroll-snap-type: y proximity; */
+}
+
+.calendar_window::-webkit-scrollbar {
+  display: none;
+}
+
+.calendar {
+  background: var(--background);
+  min-height: 10000vh;
+  top: -5000vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: flex .5s;
+}
+
+.month {
+  min-height: calc(var(--calendar-height));
+  max-height: calc(var(--calendar-height));
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+}
+
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  scroll-snap-align: start;
 }
 
 .details {
@@ -146,25 +184,6 @@ header > div:first-child {
   padding-top: var(--space-xs);
 }
 
-.calendar {
-  background: var(--background);
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  scrollbar-width: none;
-}
-
-.calendar::-webkit-scrollbar {
-  display: none;
-}
-
-.month {
-  scroll-snap-align: start;
-  min-height: calc(var(--calendar-height));
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, 1fr);
-}
-
 .five-weeks {
   margin-bottom: calc(-2 * (var(--calendar-height) / 6));
 }
@@ -172,6 +191,8 @@ header > div:first-child {
 .six-weeks {
   margin-bottom: calc(-1 * (var(--calendar-height) / 6));
 }
+
+/* TODO: find a way to make the weekends slightly darker */
 
 .day {
   border: var(--border-width) solid var(--mid-tone);
@@ -193,7 +214,7 @@ header > div:first-child {
 
 /*** FEAST DAY STYLING ***/
 
-.current-month > div.day {
+.current-month > div.week > div.day {
   color: var(--foreground);
   opacity: 1;
 }
@@ -209,17 +230,18 @@ header > div:first-child {
   visibility: hidden;
 }
 
-.date-key {
-  visibility: hidden;
-}
+/* .date-key { */
+/*   visibility: hidden; */
+/* } */
 
 .feast {
-  font-size: var(--step-0);
+  font-size: var(--step--1);
   width: 100%;
 }
 
 .rank {
-  font-size: var(--step--1);
+  color: var(--foreground-contrast);
+  font-size: var(--step--2);
   font-weight: light;
 }
 
@@ -273,10 +295,27 @@ span.today {
 
 /* TODO: update the styles for the new month layout */
 @media (max-width: 500px) {
+  .calendar_window {
+    overflow-y: scroll;
+    /* scroll-snap-type: y mandatory; */
+  }
+
   .month {
+    /* grid-template-columns: 100%; */
+    /* display: flex; */
+    /* flex-direction: column; */
+    scroll-snap-align: none;
     display: flex;
     flex-direction: column;
-    scroll-snap-align: none;
+    min-height: auto;
+    max-height: fit-content;
+    /* grid-template-columns: 100%; */
+  }
+
+  .week {
+    /* grid-template-columns: 100%; */
+    display: flex;
+    flex-direction:column;
   }
 
   .five-weeks,.six-weeks {
@@ -288,7 +327,7 @@ span.today {
   }
 
   .day {
-    scroll-snap-align: middle;
+    scroll-snap-align: top;
     height: 25vh;
     /* TODO: get rid of the color calculations for mobile */
     color: black !important;
