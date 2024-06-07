@@ -9,6 +9,7 @@ const currentDateId = currentDate.toLocaleDateString('en-US', { month: 'long', d
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const WEEKDAY = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
+
 function fetchJson(data) {
     fetch(data)
         .then(response => response.json())
@@ -297,7 +298,7 @@ function flankMonthsToInitial () {
     CALENDAR.append(buildMonth(monthAfter[1], monthAfter[0]));
 };
 
-const startTime = performance.now()
+// const startTime = performance.now()
 
 CALENDAR.appendChild(buildMonth(currentYear, currentMonth, true));
 flankMonthsToInitial();
@@ -312,9 +313,9 @@ if (isMobile) {
     scrollToCurrentMonth();
 };
 
-const endTime = performance.now();
+// const endTime = performance.now();
 
-console.log(`Performance: ${(endTime - startTime).toFixed(2)} milliseconds`);
+// console.log(`Performance: ${(endTime - startTime).toFixed(2)} milliseconds`);
 
 function displayDetails(date) {
     const detailsPane = document.getElementById("details");

@@ -32,8 +32,9 @@ def home():
         month=month,
         year=year,
         data=data,
-        ordotools_version="v0.0.34-alpha"
+        ordotools_version="v0.0.36-alpha"
     )
+
 
 ##################################################################################
 ## APIs -- some super simple implementations
@@ -58,7 +59,7 @@ def today_api(diocese="roman", language="la"):
     all_dates = ordotools.LiturgicalCalendar(year=today.year, diocese=diocese, language=language).build()
     return api_array_return(all_dates[day_of_year])
 
-@app.route("/<int:year>", methods=("GET", "POST"))
+@app.route("/<int:year>")
 def get_year(year):
     # TODO: handle dates that are out of range.
     # TODO: maybe we can have an alert system for bad dates that merely flashes...
