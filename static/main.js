@@ -297,9 +297,6 @@ function flankMonthsToInitial () {
     CALENDAR.append(buildMonth(monthAfter[1], monthAfter[0]));
 };
 
-
-// setTimeout(function() {
-//
 const startTime = performance.now()
 
 CALENDAR.appendChild(buildMonth(currentYear, currentMonth, true));
@@ -308,6 +305,7 @@ calendarWindow.addEventListener('scroll', onScroll);
 updateHeader();
 
 let isMobile = window.matchMedia("only screen and (max-width: 500px)").matches;
+
 if (isMobile) {
     scrollToCurrentDay();
 } else {
@@ -315,9 +313,8 @@ if (isMobile) {
 };
 
 const endTime = performance.now();
-console.log(`Performance: ${(endTime - startTime).toFixed(2)} milliseconds`);
-// }, 400);
 
+console.log(`Performance: ${(endTime - startTime).toFixed(2)} milliseconds`);
 
 function displayDetails(date) {
     const detailsPane = document.getElementById("details");
