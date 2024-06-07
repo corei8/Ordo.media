@@ -1,5 +1,6 @@
 # from flask import errorhandler
 from datetime import datetime
+from datetime import date
 from flask import Flask
 from flask import render_template
 from flask import send_file
@@ -33,6 +34,29 @@ def home():
         data=data,
         ordotools_version="v0.0.34-alpha"
     )
+
+##################################################################################
+## APIs -- some super simple implementations
+##################################################################################
+
+def api_array_return(feast):
+    return [
+        feast.name,
+        feast.color
+    ]
+
+@app.route("/<int:year>-<int:month>-<int:day>/<diocese>_<language>")
+def day_api(year, month, day, diocese="roman", language="la"):
+    all_dates = ordotools.LiturgicalCalendar(year=year, diocese=diocese, language=language).build()
+    day_of_year = date(year, month, day).timetuple().tm_yday
+    return api_array_return(all_dates[day_of_year])
+
+@app.route("/today/<diocese>_<language>")
+def today_api(diocese="roman", language="la"):
+    today = datetime.today()
+    day_of_year = today.timetuple().tm_yday
+    all_dates = ordotools.LiturgicalCalendar(year=today.year, diocese=diocese, language=language).build()
+    return api_array_return(all_dates[day_of_year])
 
 @app.route("/<int:year>", methods=("GET", "POST"))
 def get_year(year):
