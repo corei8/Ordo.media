@@ -22,9 +22,9 @@ def serve_manifest():
 def home():
     year = int(datetime.today().strftime("%Y"))
     month = datetime.today().strftime("%B")
-    raw = ()
-    for y in range(year-2,year+2):
-        raw += list(ordotools.LiturgicalCalendar(year=y, diocese="roman", language="la").build())
+    raw = [ ordotools.LiturgicalCalendar(year=y, diocese="roman", language="la").build() for y in range(year-2,year+2) ]
+    # for y in range(year-2,year+2):
+    #     raw += ordotools.LiturgicalCalendar(year=y, diocese="roman", language="la").build()
     data = PrintCalendar(month, [year-1, year, year+1], raw).json_year
     return render_template(
         "calendar.html",
