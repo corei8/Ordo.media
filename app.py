@@ -24,7 +24,7 @@ def home():
     month = datetime.today().strftime("%B")
     raw = ()
     for y in range(year-2,year+2):
-        raw += ordotools.LiturgicalCalendar(year=y, diocese="roman", language="la").build()
+        raw += list(ordotools.LiturgicalCalendar(year=y, diocese="roman", language="la").build())
     data = PrintCalendar(month, [year-1, year, year+1], raw).json_year
     return render_template(
         "calendar.html",
