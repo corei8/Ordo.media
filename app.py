@@ -32,7 +32,7 @@ def home():
         month=month,
         year=year,
         data=data,
-        ordotools_version="v0.0.36-alpha"
+        ordotools_version="v0.0.37-alpha"
     )
 
 
