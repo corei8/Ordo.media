@@ -10,7 +10,7 @@ const MONTHS = ["January","February","March","April","May","June","July","August
 const WEEKDAY = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
 
-function fetchJson(data) {
+async function fetchJson(data) {
     fetch(data)
         .then(response => response.json())
         .then(json => {
@@ -19,7 +19,7 @@ function fetchJson(data) {
     return;
 };
 
-function requestDates(month, year) {
+async function requestDates(month, year) {
     let yearKeys = Object.keys(calendarData).sort();
     let firstYear = new Date(yearKeys[0]).toLocaleString('en-US', {year: 'numeric'});
     let lastYear  = new Date(yearKeys[yearKeys.length - 1]).toLocaleString('en-US', {year: 'numeric'});
@@ -244,17 +244,6 @@ function updateHeader() {
     const dynamicMonth = document.getElementById('dynamicMonth');
     dynamicMonth.innerHTML = `<b>${theMonth}</b>&nbsp;${theYear}`;
 };
-
-// function addMonthColor(month) {
-//     const hiddenInfoDivs = hiddenDates();
-//     for (let i = 0; i < hiddenInfoDivs.length; i++) {
-//         if (hiddenInfoDivs[i].textContent.split(' ')[0] != month) {
-//             hiddenInfoDivs[i].parentElement.classList.remove('current-month');
-//         } else {
-//             hiddenInfoDivs[i].parentElement.classList.add('current-month');
-//         };
-//     };
-// };
 
 function debounce(func, delay) {
     let timeoutId;
