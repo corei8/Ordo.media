@@ -103,9 +103,6 @@ function addElement(type, classname, content = '') {
 
 function createDayElement(day, month, year) {
     const date = new Date(year, month, day);
-
-    console.log(date)
-    
     const dayDiv = document.createElement('div');
     dayDiv.classList.add('day');
     if (day === 1) {
@@ -147,6 +144,36 @@ function createDayElement(day, month, year) {
         feastInformationDiv.textContent = calendarData[dateForJson]['name'];
         rankSpan.textContent = calendarData[dateForJson]['rank'];
     }
+    dayDiv.appendChild(feastInformationDiv)
+
+    //-----------------------------------------------------------------------------
+    // commemorated feast
+
+    const standardCommemorations = [
+        99906,
+        99907,
+        99908,
+        99909,
+        99910,
+        99911,
+        99912,
+        99913,
+        99914,
+    ]
+
+    // TypeError because "code" is not in every commemoration?
+
+    if (standardCommemorations.includes(calendarData[dateForJson]['com_1']['code'])) {
+        var commemoratedFeast = '';
+    } else {
+        var commemoratedFeast = calendarData[dateForJson]['com_1']['name'];
+    };
+
+    const commemoratedFeastDiv = document.createElement('div');
+    commemoratedFeastDiv.textContent = commemoratedFeast;
+    commemoratedFeastDiv.classList.add('commemorated_feast');
+
+    //-----------------------------------------------------------------------------
 
     // for fetching data for the aside
     // const dataDateKey = document.createElement('span');
@@ -154,7 +181,7 @@ function createDayElement(day, month, year) {
     // dataDateKey.textContent = dateForJson;
     // dayNumberDiv.appendChild(dataDateKey);
 
-    dayDiv.appendChild(feastInformationDiv)
+    dayDiv.appendChild(commemoratedFeastDiv);
     feastInformationDiv.appendChild(rankSpan)
     const feastStatusDiv = document.createElement('div');
     feastStatusDiv.classList.add('feast-status');
@@ -315,5 +342,7 @@ function displayDetails(date) {
     detailsPane.querySelector(".details_feast").textContent = calendarData[date]['name'];
     detailsPane.querySelector(".details_rank").textContent = calendarData[date]['rank'];
     detailsPane.querySelector(".details_color").textContent = calendarData[date]['color'];
-    detailsPane.querySelector(".details_commemoration").textContent = calendarData[date]['com'];
+    detailsPane.querySelector(".details_com_1").textContent = calendarData[date]['com_1']['name'];
+    detailsPane.querySelector(".details_com_2").textContent = calendarData[date]['com_2']['name'];
+    detailsPane.querySelector(".details_com_3").textContent = calendarData[date]['com_3']['name'];
 };

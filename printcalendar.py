@@ -46,6 +46,8 @@ class PrintCalendar:
                 'rank':feast.rank_v,
                 'color':feast.color,
                 'moon-phase': self.moon_phase(feast.date),
-                'com':feast.com_1['name'] if 'name' in feast.com_1.keys() else '',
+                'com_1':feast.com_1,
+                'com_2':feast.com_2,
+                'com_3':feast.com_3,
             } for feast in self.data
         }

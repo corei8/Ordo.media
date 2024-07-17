@@ -205,6 +205,14 @@ header > div:first-child {
   justify-content: space-between;
   align-content: space-between;
   flex-wrap: wrap;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+  transition: background 100ms;
+}
+
+.day:hover {
+  background: #f4f4f4;
 }
 
 .border-top    { border-top: .5px solid black; }
@@ -248,6 +256,11 @@ header > div:first-child {
 .rank:before {
   content: ' ';
   display: block;
+}
+
+.commemorated_feast {
+  font-size: var(--step--2);
+  font-weight: light;
 }
 
 .feast-status {
@@ -333,6 +346,7 @@ span.today {
     color: black !important;
     font-size: var(--step-2)!important;
   }
+
 
   .day-weekday {
     visibility: visible;
