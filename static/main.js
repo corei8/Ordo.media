@@ -103,7 +103,9 @@ function addElement(type, classname, content = '') {
 
 function createDayElement(day, month, year) {
     const date = new Date(year, month, day);
-    // console.log(date)
+
+    console.log(date)
+    
     const dayDiv = document.createElement('div');
     dayDiv.classList.add('day');
     if (day === 1) {
@@ -159,6 +161,7 @@ function createDayElement(day, month, year) {
     const moonAndColor = document.createElement('div');
     moonAndColor.classList.add('color-container');
     const color = document.createElement('div');
+    console.log(calendarData)
     color.classList.add(calendarData[dateForJson]['color'],'color');
     moonAndColor.appendChild(color);
     const moonPhase = document.createElement('div');

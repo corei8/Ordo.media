@@ -10,6 +10,13 @@ from werkzeug.exceptions import BadRequest
 import ordotools
 
 
+def ordotools_version():
+    with open("./requirements.txt", "r") as f:
+        for line in f:
+            if "ordotools" in line:
+                version = line.split("==")[1].strip()
+                return version
+
 app = Flask(__name__)
 Minify(app=app, passive=True)
 
@@ -32,7 +39,7 @@ def home():
         month=month,
         year=year,
         data=data,
-        ordotools_version="v0.0.39-alpha"
+        ordotools_version=ordotools_version()
     )
 
 

@@ -8,10 +8,8 @@
             </div>
             <div class="warning">
                 ⚠ Warning! This calendar is running 
-                <a href="https://pypi.org/project/ordotools/">
-                    ordotools {{ ordotools_version }}
-                </a>,
-                a software still in development. There are known inaccuracies.
+                <a href="https://pypi.org/project/ordotools/">ordotools {{ordotools_version}}</a>,
+                a software still in development. Expect inaccuracies.
             </div>
         </div>
         <div class="weekdays">
@@ -37,7 +35,7 @@
 {% endblock content %}
 
 {% block scripts %}
-<script defer>
+<script async>
     localStorage.setItem("scriptRoot", JSON.stringify({{ request.script_root|tojson }}));
     localStorage.setItem("data", JSON.stringify({{ data|tojson }}));
 </script>
