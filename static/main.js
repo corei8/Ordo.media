@@ -110,17 +110,22 @@ function createDayElement(day, month, year) {
         dayDiv.id = dayId;
         dayDiv.style.gridColumnStart = positionOfFirstDay(year, month);
     };
+
     const dayNumberDiv = document.createElement('div');
-    const dayNumberSpan = document.createElement('div');
-    const dayWeekdaySpan = document.createElement('div');
     dayNumberDiv.classList.add('date');
+
+    const dayNumberSpan = document.createElement('div');
     dayNumberSpan.classList.add('day-number');
+
+    const dayWeekdaySpan = document.createElement('div');
     dayWeekdaySpan.classList.add('day-weekday');
+
     if (day === 1) {
         dayNumberSpan.textContent = `${MONTHS[month]} ${day}`;
     } else {
         dayNumberSpan.textContent = day;
     }
+
     dayWeekdaySpan.textContent = WEEKDAY[date.getDay()];
     dayNumberDiv.appendChild(dayWeekdaySpan);
     dayNumberDiv.appendChild(dayNumberSpan);
@@ -149,19 +154,7 @@ function createDayElement(day, month, year) {
     //-----------------------------------------------------------------------------
     // commemorated feast
 
-    const standardCommemorations = [
-        99906,
-        99907,
-        99908,
-        99909,
-        99910,
-        99911,
-        99912,
-        99913,
-        99914,
-    ]
-
-    // TypeError because "code" is not in every commemoration?
+    const standardCommemorations = [ 99906, 99907, 99908, 99909, 99910, 99911, 99912, 99913, 99914, ]
 
     if (standardCommemorations.includes(calendarData[dateForJson]['com_1']['code'])) {
         var commemoratedFeast = '';
@@ -188,7 +181,6 @@ function createDayElement(day, month, year) {
     const moonAndColor = document.createElement('div');
     moonAndColor.classList.add('color-container');
     const color = document.createElement('div');
-    console.log(calendarData)
     color.classList.add(calendarData[dateForJson]['color'],'color');
     moonAndColor.appendChild(color);
     const moonPhase = document.createElement('div');
@@ -201,16 +193,15 @@ function createDayElement(day, month, year) {
 }
 
 function getWeek(date) {
-  let monthStart = new Date(date);
-  monthStart.setDate(0);
-  let offset = (monthStart.getDay() + 1) % 7;
-  return Math.ceil((date.getDate() + offset) / 7)-1;
+    let monthStart = new Date(date);
+    monthStart.setDate(0);
+    let offset = (monthStart.getDay() + 1) % 7;
+    return Math.ceil((date.getDate() + offset) / 7)-1;
 }
 
 function buildMonth(year, month, firstMonth=false) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const theMonth = addMonthDiv(month, year);
-    console.log(MONTHS[month])
     for (let day = 1; day <= daysInMonth; day++) {
         let aDay = createDayElement(day, month, year);
         theMonth.children[getWeek(new Date(year, month, day))].appendChild(aDay);
@@ -250,16 +241,32 @@ function loadDays(calendarDiv, increment) {
     };
 };
 
-function removeMonthsFromDOM(direction) {
+
+function removeMonthsFromDOM () {
     let theMonths = [...document.querySelectorAll('.month')];
-    if (theMonths.length > 5) {
-        if (direction > 0) {
-            theMonths = theMonths;
-        } else {
-            theMonths = theMonths.reverse();
-        };
-        CALENDAR.removeChild(theMonths[0]);
+    for (i=0; i<theMonths.length; i++) {
+        if (theMonths[i].childNodes.length===0) {CALENDAR.removeChild(theMonths[i])};
     };
+};
+
+
+function removeWeeksFromDOM(direction) {
+    let allWeeks = [...document.querySelectorAll('.week')];
+    let weekArray = Array.from(allWeeks);
+    if (allWeeks.length > 50) {
+        if (direction > 0) { } else {
+            weekArray = weekArray.reverse();
+        };
+        weekArray.slice(0, allWeeks.length-50).forEach((week) => {
+            week.parentNode.removeChild(week);
+        });
+    };
+};
+
+function removePartialMonth(direction) {
+    let allMonths = [...document.querySelectorAll('.month')];
+    if (direction > 0) { } else { allMonths = allMonths.reverse(); };
+    CALENDAR.removeChild(allMonths[0])
 };
 
 function updateHeader() {
@@ -286,17 +293,20 @@ function debounce(func, delay) {
 };
 
 function updateDOM(direction) {
+    // TODO: check if there are any months that are not full on scroll up...
     loadDays(CALENDAR, direction);
-    removeMonthsFromDOM(direction);
+    removeWeeksFromDOM(direction);
+    removeMonthsFromDOM();
+    removePartialMonth(direction);
 };
 
 function virtualizedScrolling () { };
 
 function onScroll() {
-    if (Math.abs(CALENDAR.firstChild.getBoundingClientRect().top) < 1*window.innerHeight) {
+    if (Math.abs(CALENDAR.firstChild.getBoundingClientRect().top) < .25*window.innerHeight) {
         updateDOM(-1);
     };
-    if (CALENDAR.lastChild.getBoundingClientRect().top <= 1*window.innerHeight) {
+    if (CALENDAR.lastChild.getBoundingClientRect().top <= .25*window.innerHeight) {
         updateDOM(1);
     };
     debounce(updateHeader, 250)();
@@ -317,8 +327,6 @@ function flankMonthsToInitial () {
     CALENDAR.append(buildMonth(monthAfter[1], monthAfter[0]));
 };
 
-// const startTime = performance.now()
-
 CALENDAR.appendChild(buildMonth(currentYear, currentMonth, true));
 flankMonthsToInitial();
 calendarWindow.addEventListener('scroll', onScroll);
@@ -331,10 +339,6 @@ if (isMobile) {
 } else {
     scrollToCurrentMonth();
 };
-
-// const endTime = performance.now();
-
-// console.log(`Performance: ${(endTime - startTime).toFixed(2)} milliseconds`);
 
 function displayDetails(date) {
     const detailsPane = document.getElementById("details");
