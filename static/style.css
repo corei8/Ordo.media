@@ -136,6 +136,7 @@ header>div:first-child {
   display: grid;
   grid-template-columns: auto 15%;
   overflow: auto;
+  /* TODO: see if we have to make this height 100% */
 }
 
 .calendar_window {
@@ -152,8 +153,8 @@ header>div:first-child {
 
 .calendar {
   background: var(--background);
-  min-height: 10000vh;
-  top: -5000vh;
+  /* min-height: 10000vh; */
+  /* top: -5000vh; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -161,6 +162,7 @@ header>div:first-child {
 }
 
 .month {
+  /* TODO: use these calculations to find the height of each day*/
   min-height: calc(var(--calendar-height));
   max-height: calc(var(--calendar-height));
   display: grid;
@@ -169,6 +171,7 @@ header>div:first-child {
 
 .week {
   display: grid;
+  min-height: calc(var(--calendar-height) / 6);
   grid-template-columns: repeat(7, 1fr);
   scroll-snap-align: start;
 }
@@ -237,10 +240,16 @@ header>div:first-child {
 
 /*** FEAST DAY STYLING ***/
 
-.current-month>div.week>div.day {
+/* .current-month>div.week>div.day { */
+/*   color: var(--foreground); */
+/*   opacity: 1; */
+/* } */
+
+div.week>div.day {
   color: var(--foreground);
   opacity: 1;
 }
+
 
 .date {
   display: flex;
@@ -252,10 +261,6 @@ header>div:first-child {
 .day-weekday {
   visibility: hidden;
 }
-
-/* .date-key { */
-/*   visibility: hidden; */
-/* } */
 
 .feast {
   font-size: var(--step--1);

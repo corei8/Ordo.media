@@ -6,47 +6,49 @@ const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
 const currentMonth = currentDate.getMonth();
 const currentDateId = currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).split(' ').join('');
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const WEEKDAY = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const WEEKDAY = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 
 async function fetchJson(data) {
     fetch(data)
         .then(response => response.json())
         .then(json => {
-            calendarData = {...calendarData, ...json};
+            calendarData = { ...calendarData, ...json };
         });
     return;
 };
 
 async function requestDates(month, year) {
     let yearKeys = Object.keys(calendarData).sort();
-    let firstYear = new Date(yearKeys[0]).toLocaleString('en-US', {year: 'numeric'});
-    let lastYear  = new Date(yearKeys[yearKeys.length - 1]).toLocaleString('en-US', {year: 'numeric'});
-    if (year-1 == firstYear && month == "January") { let newData = `${SCRIPT_ROOT}/${year-1}`;
+    let firstYear = new Date(yearKeys[0]).toLocaleString('en-US', { year: 'numeric' });
+    let lastYear = new Date(yearKeys[yearKeys.length - 1]).toLocaleString('en-US', { year: 'numeric' });
+    if (year - 1 == firstYear && month == "January") {
+        let newData = `${SCRIPT_ROOT}/${year - 1}`;
         fetchJson(newData);
     } else if (year == lastYear && month == "December") {
-        let newData = `${SCRIPT_ROOT}/${parseInt(year)+1}`;
+        let newData = `${SCRIPT_ROOT}/${parseInt(year) + 1}`;
         fetchJson(newData);
     };
 };
 
+// NOTE: this will have to be re-worked
 function monthBorders(day, month, year) {
     const d = new Date(month + " " + day + ", " + year);
     const weekday = d.getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const adjust = 31 - daysInMonth;
-    const endStart = 24-adjust
-    const endEnd = 31-adjust
+    const endStart = 24 - adjust
+    const endEnd = 31 - adjust
     if (day == 1) {
         if (weekday != 0) {
-            return ["border-top","border-front"];
+            return ["border-top", "border-front"];
         } else {
             return ["border-top"];
         };
     } else if (day == daysInMonth) {
         if (weekday != 6) {
-            return ["border-bottom","border-end"];
+            return ["border-bottom", "border-end"];
         } else {
             return ["border-bottom"];
         };
@@ -59,7 +61,39 @@ function monthBorders(day, month, year) {
     };
 };
 
-Date.prototype.getWeeksInMonth = function () {
+const dayLenth = 24 * 60 * 60 * 1000;
+
+function formatDate(date) {
+    return date.toISOString().slice(0, 10);
+};
+
+// FIX: make sure that these are two functions
+// make the argument the number of weeks that we are moving
+Date.prototype.backOneWeek = function(i = 1) {
+    const theWeek = new Date(this);
+    const previousWeek = new Date(this);
+    theWeek.setDate(previousWeek.getDate() - 7 * i);
+    return theWeek;
+    // const week = 7 * dayLenth;
+    // return Date(date.getTime - 7);
+};
+
+Date.prototype.forwardOneWeek = function(i = 1) {
+    const theWeek = new Date(this);
+    const previousWeek = new Date(this);
+    theWeek.setDate(previousWeek.getDate() + 7 * i);
+    return theWeek;
+    // const week = 7 * dayLenth;
+    // return Date(date.getTime - 7);
+};
+
+// Date.prototype.fowardOneWeek = function(date) {
+//     const week = 7 * dayLenth;
+//     return Date(date.getTime - week);
+// };
+
+// NOTE: deprecated
+Date.prototype.getWeeksInMonth = function() {
     const firstDay = new Date(this.setDate(1)).getDay();
     const lastDay = new Date(this.getFullYear(), this.getMonth() + 1, 0)
     const totalDays = lastDay.getDate();
@@ -70,6 +104,7 @@ Date.prototype.getWeeksInMonth = function () {
     return Math.ceil((firstDay + totalDays) / 7 + adjust);
 };
 
+// NOTE: deprecated
 function addMonthDiv(month, year) {
     const totalWeeks = new Date(year, month, 1).getWeeksInMonth();
     const monthDiv = document.createElement('div');
@@ -80,19 +115,41 @@ function addMonthDiv(month, year) {
     // if (totalWeeks == 6) {}
     monthDiv.classList.add('month', weeks);
     monthDiv.id = `${MONTHS[month]}-${year}`;
-    for (let week = 1; week < totalWeeks+1; week++) {
+    for (let week = 1; week < totalWeeks + 1; week++) {
         const aWeek = document.createElement('div')
-        aWeek.classList.add('week_'+week, 'week');
+        aWeek.classList.add('week_' + week, 'week');
         monthDiv.appendChild(aWeek);
     };
     return monthDiv;
 };
 
+
+// NOTE: deprecated
 function positionOfFirstDay(year, month) {
     const firstDayOfMonth = new Date(year, month, 1).getDay();
     const gridColumnStart = (firstDayOfMonth) % 7 + 1;
     return gridColumnStart;
 };
+
+function addWeekDiv(date) {
+    const theDate = new Date(date);
+    let start = new Date(date);
+    if (start.getDay() > 0) {
+        start.setDate(theDate.getDate() - start.getDay());
+    };
+    const weekDiv = document.createElement('div');
+    weekDiv.classList.add('week');
+
+    for (let d = 0; d < 7; d++) {
+        const aDay = document.createElement('div');
+        aDay.classList.add('day');
+        const dateAsID = new Date(start);
+        dateAsID.setDate(start.getDate() + d);
+        aDay.id = dateAsID;
+        weekDiv.appendChild(aDay);
+    }
+    return weekDiv;
+}
 
 function addElement(type, classname, content = '') {
     const element = document.createElement(type);
@@ -101,15 +158,16 @@ function addElement(type, classname, content = '') {
     this.appendChild(element);
 };
 
-function createDayElement(day, month, year) {
-    const date = new Date(year, month, day);
+function createDayElement(theDate) {
+    const date = new Date(theDate);
     const dayDiv = document.createElement('div');
     dayDiv.classList.add('day');
-    if (day === 1) {
-        const dayId = `${MONTHS[date.getMonth()]}${date.getFullYear()}`;
-        dayDiv.id = dayId;
-        dayDiv.style.gridColumnStart = positionOfFirstDay(year, month);
-    };
+
+    // if (day === 1) {
+    //     const dayId = `${MONTHS[date.getMonth()]}${date.getFullYear()}`;
+    //     dayDiv.id = dayId;
+    //     dayDiv.style.gridColumnStart = positionOfFirstDay(year, month);
+    // };
 
     const dayNumberDiv = document.createElement('div');
     dayNumberDiv.classList.add('date');
@@ -119,6 +177,9 @@ function createDayElement(day, month, year) {
 
     const dayWeekdaySpan = document.createElement('div');
     dayWeekdaySpan.classList.add('day-weekday');
+
+    const day = date.getDate();
+    const month = date.getMonth();
 
     if (day === 1) {
         dayNumberSpan.textContent = `${MONTHS[month]} ${day}`;
@@ -130,21 +191,26 @@ function createDayElement(day, month, year) {
     dayNumberDiv.appendChild(dayWeekdaySpan);
     dayNumberDiv.appendChild(dayNumberSpan);
     dayDiv.appendChild(dayNumberDiv);
-    const dateFormatted = date.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
-    const dateForJson = date.toISOString().split('T')[0];
 
-    dayDiv.addEventListener("click", function() {displayDetails(dateForJson)}, false);
+    // const dateFormatted = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const dateForJson = formatDate(date);
 
-    if (currentDateId == dateFormatted.split(' ').join('')) {
-        dayDiv.id = currentDateId;
-        dayNumberSpan.classList.add('today');
-        dayDiv.classList.add('today');
-    };
-    if (7 >= day || day >= 22) { dayDiv.classList.add(...monthBorders(day, month, year)) };
+    dayDiv.addEventListener("click", function() { displayDetails(dateForJson) }, false);
+
+    // if (currentDateId == dateFormatted.split(' ').join('')) {
+    //     dayDiv.id = currentDateId;
+    //     dayNumberSpan.classList.add('today');
+    //     dayDiv.classList.add('today');
+    // };
+
+    // if (7 >= day || day >= 22) { dayDiv.classList.add(...monthBorders(day, month, year)) };
+
     const feastInformationDiv = document.createElement('div');
     feastInformationDiv.classList.add('feast');
+
     const rankSpan = document.createElement('span');
     rankSpan.classList.add('rank');
+
     if (calendarData.hasOwnProperty(dateForJson)) {
         feastInformationDiv.textContent = calendarData[dateForJson]['name'];
         rankSpan.textContent = calendarData[dateForJson]['rank'];
@@ -154,7 +220,7 @@ function createDayElement(day, month, year) {
     //-----------------------------------------------------------------------------
     // commemorated feast
 
-    const standardCommemorations = [ 99906, 99907, 99908, 99909, 99910, 99911, 99912, 99913, 99914, ]
+    const standardCommemorations = [99906, 99907, 99908, 99909, 99910, 99911, 99912, 99913, 99914,]
 
     if (standardCommemorations.includes(calendarData[dateForJson]['com_1']['code'])) {
         var commemoratedFeast = '';
@@ -181,7 +247,7 @@ function createDayElement(day, month, year) {
     const moonAndColor = document.createElement('div');
     moonAndColor.classList.add('color-container');
     const color = document.createElement('div');
-    color.classList.add(calendarData[dateForJson]['color'],'color');
+    color.classList.add(calendarData[dateForJson]['color'], 'color');
     moonAndColor.appendChild(color);
     const moonPhase = document.createElement('div');
     moonPhase.classList.add('moon');
@@ -192,14 +258,17 @@ function createDayElement(day, month, year) {
     return dayDiv;
 }
 
+// NOTE: maybe deprecate this one?
 function getWeek(date) {
     let monthStart = new Date(date);
     monthStart.setDate(0);
     let offset = (monthStart.getDay() + 1) % 7;
-    return Math.ceil((date.getDate() + offset) / 7)-1;
+    return Math.ceil((date.getDate() + offset) / 7) - 1;
 }
 
-function buildMonth(year, month, firstMonth=false) {
+
+// NOTE: deprecated
+function buildMonth(year, month, firstMonth = false) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const theMonth = addMonthDiv(month, year);
     for (let day = 1; day <= daysInMonth; day++) {
@@ -212,6 +281,24 @@ function buildMonth(year, month, firstMonth=false) {
     return theMonth;
 };
 
+function buildWeek(date, position = "back") {
+    // NOTE: do we want week and month here?
+    const theWeek = addWeekDiv(date);
+    for (let d = 0; d < 7; d++) {
+        const dayBuilt = createDayElement(theWeek.children[d].id);
+        while (dayBuilt.firstChild) {
+            theWeek.children[d].appendChild(dayBuilt.firstChild);
+        }
+    }
+
+    if (position === "front") {
+        CALENDAR.prepend(theWeek);
+    } else {
+        CALENDAR.appendChild(theWeek);
+    }
+}
+
+// TODO: turn this into "incrementWeek"
 function incrementMonth(month, year, increment) {
     if (increment > 0) {
         if (month == 11) {
@@ -242,10 +329,10 @@ function loadDays(calendarDiv, increment) {
 };
 
 
-function removeMonthsFromDOM () {
+function removeMonthsFromDOM() {
     let theMonths = [...document.querySelectorAll('.month')];
-    for (i=0; i<theMonths.length; i++) {
-        if (theMonths[i].childNodes.length===0) {CALENDAR.removeChild(theMonths[i])};
+    for (i = 0; i < theMonths.length; i++) {
+        if (theMonths[i].childNodes.length === 0) { CALENDAR.removeChild(theMonths[i]) };
     };
 };
 
@@ -257,7 +344,7 @@ function removeWeeksFromDOM(direction) {
         if (direction > 0) { } else {
             weekArray = weekArray.reverse();
         };
-        weekArray.slice(0, allWeeks.length-50).forEach((week) => {
+        weekArray.slice(0, allWeeks.length - 50).forEach((week) => {
             week.parentNode.removeChild(week);
         });
     };
@@ -273,7 +360,7 @@ function updateHeader() {
     let allMonths = document.querySelectorAll('.month');
     try {
         CALENDAR.querySelector('.current-month').classList.remove('current-month');
-    } catch(TypeError) { };
+    } catch (TypeError) { };
     visibleMonth = allMonths[Math.floor(allMonths.length / 2)]
     visibleMonth.classList.add('current-month');
     const theMonth = visibleMonth.id.split('-')[0];
@@ -284,7 +371,7 @@ function updateHeader() {
 
 function debounce(func, delay) {
     let timeoutId;
-    return function (...args) {
+    return function(...args) {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
             func.apply(this, args);
@@ -300,44 +387,68 @@ function updateDOM(direction) {
     removePartialMonth(direction);
 };
 
-function virtualizedScrolling () { };
+function virtualizedScrolling() { };
 
 function onScroll() {
-    if (Math.abs(CALENDAR.firstChild.getBoundingClientRect().top) < .25*window.innerHeight) {
+    if (Math.abs(CALENDAR.firstChild.getBoundingClientRect().top) < .25 * window.innerHeight) {
         updateDOM(-1);
     };
-    if (CALENDAR.lastChild.getBoundingClientRect().top <= .25*window.innerHeight) {
+    if (CALENDAR.lastChild.getBoundingClientRect().top <= .25 * window.innerHeight) {
         updateDOM(1);
     };
     debounce(updateHeader, 250)();
 };
 
-function scrollToCurrentMonth () {
+function scrollToCurrentMonth() {
     document.getElementById(`${MONTHS[currentMonth]}-${currentYear}`).scrollIntoView();
 };
 
-function scrollToCurrentDay () {
-    document.getElementsByClassName(`today`)[0].scrollIntoView();
+function scrollToCurrentDay() {
+    const today = new Date()
+    document.getElementById(today).scrollIntoView();
+    // document.getElementsByClassName(`today`)[0].scrollIntoView();
 };
 
-function flankMonthsToInitial () {
+function flankMonthsToInitial() {
     const monthBefore = incrementMonth(currentMonth, currentYear, -1);
     CALENDAR.prepend(buildMonth(monthBefore[1], monthBefore[0]));
     const monthAfter = incrementMonth(currentMonth, currentYear, 1);
     CALENDAR.append(buildMonth(monthAfter[1], monthAfter[0]));
 };
 
-CALENDAR.appendChild(buildMonth(currentYear, currentMonth, true));
-flankMonthsToInitial();
-calendarWindow.addEventListener('scroll', onScroll);
-updateHeader();
+// CALENDAR.appendChild(buildMonth(currentYear, currentMonth, true));
+// flankMonthsToInitial();
+// calendarWindow.addEventListener('scroll', onScroll);
+// updateHeader();
+
+
+function initialBuild() {
+    const today = new Date();
+    buildWeek(today);
+    // TODO: build all of the items that we need for the initial load.
+    let week_added = new Date(today);
+    let week_subtracted = new Date(today);
+    for (y = 1; y < 11; y++) {
+
+        week_added = week_added.forwardOneWeek();
+        buildWeek(week_added);
+
+        week_subtracted = week_subtracted.backOneWeek();
+        buildWeek(week_subtracted, "front");
+
+    }
+}
+
+initialBuild();
+
+scrollToCurrentDay();
 
 let isMobile = window.matchMedia("only screen and (max-width: 500px)").matches;
 
 if (isMobile) {
-    scrollToCurrentDay();
+    // scrollToCurrentDay();
 } else {
-    scrollToCurrentMonth();
+    // scrollToCurrentMonth();
 };
 
 function displayDetails(date) {
