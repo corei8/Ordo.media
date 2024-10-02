@@ -143,9 +143,11 @@ header>div:first-child {
   height: 100%;
   scrollbar-width: none;
   overflow-y: scroll;
-  /* BUG: this still is not working*/
+  /* BUG: this still is not working as expected */
   /* scroll-snap-type: y proximity; */
+  scroll-behavior: smooth;
 }
+
 
 .calendar_window::-webkit-scrollbar {
   display: none;
@@ -174,6 +176,19 @@ header>div:first-child {
   min-height: calc(var(--calendar-height) / 6);
   grid-template-columns: repeat(7, 1fr);
   scroll-snap-align: start;
+  animation: delayed-snap 100ms forwards;
+}
+
+@keyframes delayed-snap {
+
+  0%,
+  90% {
+    scroll-snap-align: none;
+  }
+
+  100% {
+    scroll-snap-align: start;
+  }
 }
 
 .details {
@@ -257,6 +272,8 @@ div.week>div.day {
   justify-content: space-between;
   font-size: var(--step-0);
 }
+
+
 
 .day-weekday {
   visibility: hidden;
