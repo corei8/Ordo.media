@@ -2,10 +2,6 @@ let calendarData = JSON.parse(localStorage.getItem("data"));
 let SCRIPT_ROOT = JSON.parse(localStorage.getItem("scriptRoot"));
 const CALENDAR = document.getElementById('calendar');
 const calendarWindow = document.getElementById('calendarWindow');
-const currentDate = new Date();
-const currentYear = currentDate.getFullYear();
-const currentMonth = currentDate.getMonth();
-const currentDateId = currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).split(' ').join('');
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const WEEKDAY = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
