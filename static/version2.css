@@ -57,14 +57,14 @@ main {
 }
 
 .day {
-        border: 1px solid #ddd;
+        border: .5px solid #ddd;
         padding: 0.5rem;
         cursor: pointer;
         transition: background-color 0.2s;
         position: relative;
         display: flex;
         flex-direction: column;
-        min-height: 120px;
+        /* min-height: 120px; */
 }
 
 .day:hover {
@@ -77,6 +77,7 @@ main {
 
 .day.selected {
         outline: 2px solid #4a90e2;
+        z-index: 100;
 }
 
 .day-number {

@@ -43,7 +43,7 @@ class Calendar {
                 return "#f9f9f9"; // Off-white
             case "black":
                 return "#e0e0e0"; // Light gray
-            case "violet":
+            case "purple":
                 return "#f0e6ff"; // Light violet/purple
             case "pink":
                 return "#ffe6f3"; // Light pink/rose
@@ -615,11 +615,11 @@ class Calendar {
             <div class="json-view">${JSON.stringify(dayData, null, 2)}</div>
         `;
 
-        // Reattach help button event listener
-        const helpButton = this.dayDetails.querySelector(".help-button");
-        helpButton.addEventListener("click", () => {
-            document.getElementById("help-modal").classList.add("active");
-        });
+        // // Reattach help button event listener
+        // const helpButton = this.dayDetails.querySelector(".help-button");
+        // helpButton.addEventListener("click", () => {
+        //     document.getElementById("help-modal").classList.add("active");
+        // });
 
         // Handle mobile view
         if (window.matchMedia("(max-width: 768px)").matches) {
