@@ -5,11 +5,17 @@ class Calendar {
         this.container = document.getElementById("calendar-container");
         this.dateDisplay = document.getElementById("date-display");
         this.dayDetails = document.getElementById("day-details");
-        this.calendarData = this.loadCalendarData();
+        // this.calendarData = this.loadCalendarData();
+
+        // TODO: add error handling
+        this.scriptRoot = JSON.parse(localStorage.getItem("scriptRoot"));
+        this.calendarData = {};
         this.touchStartY = 0;
         this.touchEndY = 0;
         this.setupEventListeners();
-        this.render();
+        this.initializeData().then(() => {
+            this.render();
+        });
     }
 
     loadCalendarData() {
@@ -243,7 +249,6 @@ class Calendar {
             }, 300);
         });
     }
-
     changeMonth(delta) {
         this.currentDate.setMonth(this.currentDate.getMonth() + delta);
         this.render();
@@ -253,6 +258,15 @@ class Calendar {
         this.currentDate.setFullYear(this.currentDate.getFullYear() + delta);
         this.render();
     }
+    // changeMonth(delta) {
+    //     this.currentDate.setMonth(this.currentDate.getMonth() + delta);
+    //     this.render();
+    // }
+    //
+    // changeYear(delta) {
+    //     this.currentDate.setFullYear(this.currentDate.getFullYear() + delta);
+    //     this.render();
+    // }
 
     createDatePicker() {
         const currentYear = this.currentDate.getFullYear();
@@ -408,8 +422,39 @@ class Calendar {
 
         return content;
     }
+    async initializeData() {
+        this.calendarData = this.loadCalendarData();
+        // Initial render with localStorage data
+        this.render();
+    }
 
-    render() {
+    async fetchJson(date) {
+        try {
+            // NOTE: date can either be forwards or backwards...
+            const response = await fetch(
+                `${this.scriptRoot}/${date.slice(0, 4)}`,
+            );
+            const json = await response.json();
+            // Update both memory and localStorage
+            this.calendarData = { ...this.calendarData, ...json };
+            localStorage.setItem("data", JSON.stringify(this.calendarData));
+            return json;
+        } catch (e) {
+            console.error("Error fetching calendar data:", e);
+            return null;
+        }
+    }
+
+    async getDayData(dateId) {
+        if (!this.calendarData[dateId]) {
+            // If data doesn't exist, fetch it
+            await this.fetchJson(dateId);
+        }
+        return this.calendarData[dateId] || {};
+    }
+
+    // Update render to handle async data
+    async render() {
         this.dateDisplay.textContent = new Intl.DateTimeFormat("en-US", {
             year: "numeric",
             month: "long",
@@ -420,6 +465,7 @@ class Calendar {
         }
 
         const days = this.getMonthData(this.currentDate);
+        const fetchPromises = [];
 
         for (let i = 0; i < 6; i++) {
             const week = document.createElement("div");
@@ -430,7 +476,6 @@ class Calendar {
                 const dayInfo = days[dayIndex];
                 const day = document.createElement("div");
                 const dateId = this.formatDateId(dayInfo.date);
-                const dayData = this.calendarData[dateId];
 
                 day.id = dateId;
                 day.className = "day" +
@@ -441,32 +486,30 @@ class Calendar {
                         ? " selected"
                         : "");
 
-                if (dayData && dayData.color) {
-                    day.style.backgroundColor = this.getPastelColor(
-                        dayData.color,
-                    );
-                }
-
-                // Updated to pass the date
-                day.appendChild(
-                    this.createDayContent(
-                        dayData,
-                        dayInfo.date.getDate(),
-                        dayInfo.date,
-                    ),
-                );
-
-                day.addEventListener("click", () => {
-                    if (
-                        !window.matchMedia("(max-width: 768px)").matches ||
-                        !isDragging
-                    ) {
-                        document.querySelectorAll(".day.selected").forEach(
-                            (el) => el.classList.remove("selected"),
+                // Create a promise for this day's data
+                const fetchPromise = this.getDayData(dateId).then((dayData) => {
+                    if (dayData.color) {
+                        day.style.backgroundColor = this.getPastelColor(
+                            dayData.color,
                         );
-                        day.classList.add("selected");
-                        this.updateDayDetails(dayInfo.date);
                     }
+                    day.appendChild(
+                        this.createDayContent(
+                            dayData,
+                            dayInfo.date.getDate(),
+                            dayInfo.date,
+                        ),
+                    );
+                });
+
+                fetchPromises.push(fetchPromise);
+
+                day.addEventListener("click", async () => {
+                    document.querySelectorAll(".day.selected").forEach((el) =>
+                        el.classList.remove("selected")
+                    );
+                    day.classList.add("selected");
+                    await this.updateDayDetails(dayInfo.date);
                 });
 
                 week.appendChild(day);
@@ -474,6 +517,9 @@ class Calendar {
 
             this.container.appendChild(week);
         }
+
+        // Wait for all fetches to complete
+        await Promise.all(fetchPromises);
 
         // Handle mobile layout if necessary
         if (window.matchMedia("(max-width: 768px)").matches) {
@@ -483,15 +529,91 @@ class Calendar {
         }
     }
 
-    updateDayDetails(date) {
+    // render() {
+    //     this.dateDisplay.textContent = new Intl.DateTimeFormat("en-US", {
+    //         year: "numeric",
+    //         month: "long",
+    //     }).format(this.currentDate);
+    //
+    //     while (this.container.children.length > 1) {
+    //         this.container.removeChild(this.container.lastChild);
+    //     }
+    //
+    //     const days = this.getMonthData(this.currentDate);
+    //
+    //     for (let i = 0; i < 6; i++) {
+    //         const week = document.createElement("div");
+    //         week.className = "week";
+    //
+    //         for (let j = 0; j < 7; j++) {
+    //             const dayIndex = i * 7 + j;
+    //             const dayInfo = days[dayIndex];
+    //             const day = document.createElement("div");
+    //             const dateId = this.formatDateId(dayInfo.date);
+    //             const dayData = this.calendarData[dateId];
+    //
+    //             day.id = dateId;
+    //             day.className = "day" +
+    //                 (dayInfo.isCurrentMonth ? "" : " other-month") +
+    //                 (this.selectedDate &&
+    //                         dayInfo.date.toDateString() ===
+    //                             this.selectedDate.toDateString()
+    //                     ? " selected"
+    //                     : "");
+    //
+    //             if (dayData && dayData.color) {
+    //                 day.style.backgroundColor = this.getPastelColor(
+    //                     dayData.color,
+    //                 );
+    //             }
+    //
+    //             // Updated to pass the date
+    //             day.appendChild(
+    //                 this.createDayContent(
+    //                     dayData,
+    //                     dayInfo.date.getDate(),
+    //                     dayInfo.date,
+    //                 ),
+    //             );
+    //
+    //             day.addEventListener("click", () => {
+    //                 if (
+    //                     !window.matchMedia("(max-width: 768px)").matches ||
+    //                     !isDragging
+    //                 ) {
+    //                     document.querySelectorAll(".day.selected").forEach(
+    //                         (el) => el.classList.remove("selected"),
+    //                     );
+    //                     day.classList.add("selected");
+    //                     this.updateDayDetails(dayInfo.date);
+    //                 }
+    //             });
+    //
+    //             week.appendChild(day);
+    //         }
+    //
+    //         this.container.appendChild(week);
+    //     }
+    //
+    //     // Handle mobile layout if necessary
+    //     if (window.matchMedia("(max-width: 768px)").matches) {
+    //         this.container.querySelectorAll(".week").forEach((week) => {
+    //             week.style.display = "block";
+    //         });
+    //     }
+    // }
+
+    // Update updateDayDetails to handle async data
+    async updateDayDetails(date) {
         this.selectedDate = date;
         const dateId = this.formatDateId(date);
-        const dayData = this.calendarData[dateId] || {};
+        const dayData = await this.getDayData(dateId);
 
         this.dayDetails.innerHTML = `
             <h2>Day Details</h2>
             <p>${this.formatDate(date)}</p>
             <div class="json-view">${JSON.stringify(dayData, null, 2)}</div>
+            <button class="help-button">Help Guide</button>
         `;
 
         // Reattach help button event listener
@@ -506,6 +628,29 @@ class Calendar {
             document.querySelector(".mobile-overlay").classList.add("active");
         }
     }
+    // updateDayDetails(date) {
+    //     this.selectedDate = date;
+    //     const dateId = this.formatDateId(date);
+    //     const dayData = this.calendarData[dateId] || {};
+    //
+    //     this.dayDetails.innerHTML = `
+    //         <h2>Day Details</h2>
+    //         <p>${this.formatDate(date)}</p>
+    //         <div class="json-view">${JSON.stringify(dayData, null, 2)}</div>
+    //     `;
+    //
+    //     // Reattach help button event listener
+    //     const helpButton = this.dayDetails.querySelector(".help-button");
+    //     helpButton.addEventListener("click", () => {
+    //         document.getElementById("help-modal").classList.add("active");
+    //     });
+    //
+    //     // Handle mobile view
+    //     if (window.matchMedia("(max-width: 768px)").matches) {
+    //         document.querySelector("aside").classList.add("active");
+    //         document.querySelector(".mobile-overlay").classList.add("active");
+    //     }
+    // }
 }
 
 // Initialize the calendar
