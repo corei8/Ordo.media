@@ -119,15 +119,16 @@ header>div:first-child {
   /* overflow-y: scroll; */
   display: grid;
   grid-template-columns: auto 15%;
-}
 
-.weekdays-container {
-  display: flex;
-  justify-content: space-around;
-  margin-top: var(--space-xs);
-  font-size: var(--step--2);
-  font-weight: bold;
-  color: var(--mid-tone);
+  .weekdays-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: var(--space-xs);
+    font-size: var(--step--2);
+    font-weight: bold;
+    color: var(--mid-tone);
+  }
+
 }
 
 /*** CALENDAR STYLING ***/
@@ -137,47 +138,63 @@ header>div:first-child {
   grid-template-columns: auto 15%;
   overflow: auto;
   /* TODO: see if we have to make this height 100% */
+
+  .calendar_window {
+    height: 100%;
+    scrollbar-width: none;
+    overflow-y: scroll;
+    /* BUG: this still is not working as expected */
+    /* scroll-snap-type: y proximity; */
+    /* scroll-behavior: smooth; */
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    .calendar {
+      background: var(--background);
+      /* min-height: 10000vh; */
+      /* top: -5000vh; */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: flex .5s;
+
+      .week {
+        display: grid;
+        min-height: calc(var(--calendar-height) / 6);
+        grid-template-columns: repeat(7, 1fr);
+        scroll-snap-align: start;
+        animation: delayed-snap 100ms forwards;
+
+        .day {
+          border: var(--border-width) solid var(--mid-tone);
+          background: var(--background);
+          /* color: var(--mid-tone); */
+          /* opacity: 0.7; */
+          padding: var(--space-2xs);
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-content: space-between;
+          flex-wrap: wrap;
+          -webkit-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+          transition: background 100ms;
+          color: var(--foreground);
+          opacity: 1;
+
+          :hover {
+            /* background: #f4f4f4; */
+          }
+        }
+
+      }
+    }
+  }
 }
 
-.calendar_window {
-  height: 100%;
-  scrollbar-width: none;
-  overflow-y: scroll;
-  /* BUG: this still is not working as expected */
-  /* scroll-snap-type: y proximity; */
-  scroll-behavior: smooth;
-}
-
-
-.calendar_window::-webkit-scrollbar {
-  display: none;
-}
-
-.calendar {
-  background: var(--background);
-  /* min-height: 10000vh; */
-  /* top: -5000vh; */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  transition: flex .5s;
-}
-
-.month {
-  /* TODO: use these calculations to find the height of each day*/
-  min-height: calc(var(--calendar-height));
-  max-height: calc(var(--calendar-height));
-  display: grid;
-  grid-template-rows: repeat(6, 1fr);
-}
-
-.week {
-  display: grid;
-  min-height: calc(var(--calendar-height) / 6);
-  grid-template-columns: repeat(7, 1fr);
-  scroll-snap-align: start;
-  animation: delayed-snap 100ms forwards;
-}
 
 @keyframes delayed-snap {
 
@@ -213,29 +230,6 @@ header>div:first-child {
 
 /* TODO: find a way to make the weekends slightly darker */
 
-.day {
-  border: var(--border-width) solid var(--mid-tone);
-  background: var(--background);
-  color: var(--mid-tone);
-  opacity: 0.7;
-  padding: var(--space-2xs);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-content: space-between;
-  flex-wrap: wrap;
-  -webkit-user-select: none;
-  /* Safari */
-  -ms-user-select: none;
-  /* IE 10 and IE 11 */
-  user-select: none;
-  /* Standard syntax */
-  transition: background 100ms;
-}
-
-.day:hover {
-  background: #f4f4f4;
-}
 
 .border-top {
   border-top: .5px solid black;
@@ -260,10 +254,6 @@ header>div:first-child {
 /*   opacity: 1; */
 /* } */
 
-div.week>div.day {
-  color: var(--foreground);
-  opacity: 1;
-}
 
 
 .date {

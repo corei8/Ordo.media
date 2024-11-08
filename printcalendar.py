@@ -6,19 +6,19 @@ def get_moons_in_year(year):
     date=ephem.Date(datetime.date(year,1,1))
     while date.datetime().year==year:
         date=ephem.next_full_moon(date)
-        moons |= {str(date):"🌕"}
+        moons |= {str(date):"full"}
     date=ephem.Date(datetime.date(year,1,1))
     while date.datetime().year==year:
         date=ephem.previous_first_quarter_moon(date)
-        moons |= {str(date):"🌓"}
+        moons |= {str(date):"first quarter"}
     date=ephem.Date(datetime.date(year,1,1))
     while date.datetime().year==year:
         date=ephem.previous_last_quarter_moon(date)
-        moons |= {str(date):"🌗"}
+        moons |= {str(date):"last quarter"}
     date=ephem.Date(datetime.date(year,1,1))
     while date.datetime().year==year:
         date=ephem.next_new_moon(date)
-        moons |= {str(date):"🌑"}
+        moons |= {str(date):"new"}
     return moons
 
 

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="status-bar">
+    <div id="date-display"></div>
+</div>
+<main>
+    <div id="calendar-container">
+        <div class="week-header">
+            <span>Sun</span>
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+        </div>
+    </div>
+</main>
+<aside>
+    <div id="day-details">
+        <h2>Day Details</h2>
+        <p>Click a day to see details</p>
+    </div>
+    <button class="help-button">Help Guide</button>
+</aside>
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script async>
+localStorage.setItem("scriptRoot", JSON.stringify({{ request.script_root|tojson }}));
+localStorage.setItem("data", JSON.stringify({{ data|tojson }}));
+</script>
+
+<div class="modal-overlay" id="help-modal">
+    <div class="modal-content">
+        <button class="modal-close" aria-label="Close help">&times;</button>
+        <h2>Information</h2>
+        <div class="help-section">
+
+            <div class="help-section">
+                <h3>Mouse Navigation</h3>
+                <ul>
+                    <li>Click any day to view its details.</li>
+                    <li>Use mouse wheel to scroll through months.</li>
+                </ul>
+            </div>
+
+            <h3>Keyboard Navigation</h3>
+            <ul>
+                <li><span class="keyboard-shortcut">↑</span> or <span class="keyboard-shortcut">k</span> Previous month</li>
+                <li><span class="keyboard-shortcut">↓</span> or <span class="keyboard-shortcut">j</span> Next month</li>
+                <li><span class="keyboard-shortcut">←</span> or <span class="keyboard-shortcut">h</span> Previous year</li>
+                <li><span class="keyboard-shortcut">→</span> or <span class="keyboard-shortcut">l</span> Next year</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h3>Changelog</h3>
+            <ul>
+                <li>This is running alpha software; expect inaccuracies.</li>
+                <li><a href="https://pypi.org/project/ordotools/">ordotools {{ordotools_version}}</a></li>
+                <li>Mobile version is in progress.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="mobile-overlay"></div>
+{% endblock scripts %}

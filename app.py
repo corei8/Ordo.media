@@ -34,7 +34,7 @@ def home():
         raw += ordotools.LiturgicalCalendar(year=y, diocese="roman", language="la").build()
     data = PrintCalendar(month, [year-1, year, year+1], raw).json_year
     return render_template(
-        "calendar.html",
+        "version2.html",
         title="Calendar",
         month=month,
         year=year,

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
 <main>
     <header id="calendarTitle">
@@ -25,16 +26,20 @@
             <div class="details-buffer"></div>
         </div>
     </header>
+
     <div class="calendar_container">
         <div class="calendar_window" id="calendarWindow">
             <div id="calendar" class="calendar"></div>
         </div>
         {% include 'details.html' %}
     </div>
+
 </main>
+
 {% endblock content %}
 
 {% block scripts %}
+
 <script async>
     localStorage.setItem("scriptRoot", JSON.stringify({{ request.script_root|tojson }}));
     localStorage.setItem("data", JSON.stringify({{ data|tojson }}));

@@ -1,0 +1,421 @@
+* {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+}
+
+body {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        grid-template-rows: 60px 1fr;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+}
+
+#status-bar {
+        grid-column: 1 / -1;
+        background: #f0f0f0;
+        padding: 1rem;
+        border-bottom: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+}
+
+#date-display {
+        font-size: 1.5rem;
+        font-weight: bold;
+}
+
+main {
+        overflow: auto;
+        position: relative;
+}
+
+#calendar-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+}
+
+.week-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        background: #f8f8f8;
+        border-bottom: 1px solid #ddd;
+}
+
+.week-header span {
+        padding: 0.5rem;
+        text-align: center;
+        font-weight: bold;
+}
+
+.week {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        flex: 1;
+}
+
+.day {
+        border: 1px solid #ddd;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-height: 120px;
+}
+
+.day:hover {
+        filter: brightness(0.95);
+}
+
+.day.other-month {
+        color: #999;
+}
+
+.day.selected {
+        outline: 2px solid #4a90e2;
+}
+
+.day-number {
+        position: absolute;
+        top: 0.3rem;
+        left: 0.3rem;
+        font-size: 0.8rem;
+        color: #666;
+}
+
+.day-name {
+        margin-top: 1.2rem;
+        font-weight: bold;
+        font-size: 0.9rem;
+        line-height: 1.2;
+}
+
+.day-rank {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 0.2rem;
+        margin-bottom: 0.5rem;
+}
+
+.commemorations {
+        font-size: 0.75rem;
+        font-style: italic;
+        color: #777;
+        margin-top: auto;
+}
+
+.commemoration {
+        margin-top: 0.2rem;
+}
+
+.moon-phase {
+        position: absolute;
+        bottom: 0.3rem;
+        right: 0.3rem;
+        width: 20px;
+        height: 20px;
+}
+
+aside {
+        background: #f8f8f8;
+        border-left: 1px solid #ccc;
+        padding: 1rem;
+}
+
+#day-details {
+        position: sticky;
+        top: 1rem;
+}
+
+/* Add/update these CSS rules */
+aside {
+        background: #f8f8f8;
+        border-left: 1px solid #ccc;
+        padding: 1rem;
+        height: 100%;
+        /* Fill available height */
+        overflow: hidden;
+        /* Prevent aside from scrolling */
+}
+
+#day-details {
+        position: sticky;
+        top: 1rem;
+        max-height: calc(100vh - 80px);
+        /* Account for status bar height + padding */
+        overflow-y: auto;
+        /* Enable scrolling for content */
+}
+
+.json-view {
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        background: #f5f5f5;
+        padding: 1rem;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        overflow-x: auto;
+        /* Handle long lines */
+        white-space: pre;
+        /* Preserve formatting */
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-top: 1rem;
+}
+
+#date-display {
+        font-size: 1.5rem;
+        font-weight: bold;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+}
+
+.date-select {
+        font-size: 1.2rem;
+        padding: 0.3rem 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: white;
+        cursor: pointer;
+}
+
+.date-select:hover {
+        border-color: #999;
+}
+
+.date-select:focus {
+        outline: none;
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* Add these styles */
+.help-button {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        background: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+}
+
+.help-button:hover {
+        background: #357abd;
+}
+
+.modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+}
+
+.modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+}
+
+.modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        max-width: 500px;
+        width: 90%;
+        position: relative;
+        transform: translateY(-20px);
+        transition: transform 0.2s ease;
+}
+
+.modal-overlay.active .modal-content {
+        transform: translateY(0);
+}
+
+.modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+}
+
+.modal-close:hover {
+        color: #333;
+}
+
+.keyboard-shortcut {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        font-family: monospace;
+        margin: 0 0.2rem;
+}
+
+.help-section {
+        margin-bottom: 1.5rem;
+}
+
+.help-section h3 {
+        margin-bottom: 0.5rem;
+        color: #333;
+}
+
+.help-section ul {
+        list-style: none;
+        padding: 0;
+}
+
+.help-section li {
+        margin: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+}
+
+/* Add/modify these CSS rules */
+@media (max-width: 768px) {
+        body {
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px 1fr;
+                overflow-x: hidden;
+        }
+
+        main {
+                height: calc(100vh - 60px);
+                overflow-y: auto;
+        }
+
+        #calendar-container {
+                height: auto;
+        }
+
+        .week-header {
+                display: none;
+                /* Hide the original week header */
+        }
+
+        .week {
+                display: block;
+        }
+
+        .day {
+                display: flex;
+                flex-direction: column;
+                height: 20vh;
+                /* Take up 20% of viewport height */
+                margin-bottom: 1px;
+                position: relative;
+        }
+
+        /* Add day of week to each day */
+        .day::before {
+                content: attr(data-day-name);
+                font-size: 0.8rem;
+                color: #666;
+                position: absolute;
+                top: 0.3rem;
+                right: 0.3rem;
+        }
+
+        .day-number {
+                position: absolute;
+                top: 0.3rem;
+                left: 0.3rem;
+        }
+
+        /* Adjust content positioning to account for day name */
+        .day-name {
+                margin-top: 1.8rem;
+                /* Increased margin to account for day name */
+        }
+
+        aside {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 80vh;
+                width: 100%;
+                transform: translateY(100%);
+                transition: transform 0.3s ease;
+                z-index: 100;
+                border-left: none;
+                border-top: 1px solid #ccc;
+                border-top-left-radius: 16px;
+                border-top-right-radius: 16px;
+                padding-top: 2rem;
+        }
+
+        aside.active {
+                transform: translateY(0);
+        }
+
+        aside::before {
+                content: '';
+                position: absolute;
+                top: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 40px;
+                height: 4px;
+                background: #ccc;
+                border-radius: 2px;
+        }
+
+        #day-details {
+                height: 100%;
+                max-height: none;
+                padding-bottom: 4rem;
+                /* Space for help button */
+        }
+
+        .help-button {
+                bottom: 1rem;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 2rem);
+                padding: 1rem;
+                text-align: center;
+        }
+
+        /* Add touch overlay when aside is active */
+        .mobile-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 99;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+        }
+
+        .mobile-overlay.active {
+                display: block;
+                opacity: 1;
+        }
+
+}
