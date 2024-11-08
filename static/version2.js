@@ -613,7 +613,6 @@ class Calendar {
             <h2>Day Details</h2>
             <p>${this.formatDate(date)}</p>
             <div class="json-view">${JSON.stringify(dayData, null, 2)}</div>
-            <button class="help-button">Help Guide</button>
         `;
 
         // Reattach help button event listener
