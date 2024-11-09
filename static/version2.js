@@ -5,13 +5,11 @@ class Calendar {
         this.container = document.getElementById("calendar-container");
         this.dateDisplay = document.getElementById("date-display");
         this.dayDetails = document.getElementById("day-details");
-        // this.calendarData = this.loadCalendarData();
-
-        // TODO: add error handling
         this.scriptRoot = JSON.parse(localStorage.getItem("scriptRoot"));
         this.calendarData = {};
         this.touchStartY = 0;
         this.touchEndY = 0;
+        this.fetchingYears = new Set();
         this.setupEventListeners();
         this.initializeData().then(() => {
             this.render();
@@ -36,19 +34,19 @@ class Calendar {
     getPastelColor(color) {
         switch (color.toLowerCase()) {
             case "red":
-                return "#ffe6e6"; // Light red/rose
+                return "#ffe6e6";
             case "green":
-                return "#e6ffe6"; // Light green
+                return "#e6ffe6";
             case "white":
-                return "#f9f9f9"; // Off-white
+                return "#f9f9f9";
             case "black":
-                return "#e0e0e0"; // Light gray
+                return "#e0e0e0";
             case "purple":
-                return "#f0e6ff"; // Light violet/purple
+                return "#f0e6ff";
             case "pink":
-                return "#ffe6f3"; // Light pink/rose
+                return "#ffe6f3";
             default:
-                return "#ffffff"; // Pure white as fallback
+                return "#ffffff";
         }
     }
 
@@ -65,7 +63,6 @@ class Calendar {
                     </defs>
                     <circle cx="50" cy="50" r="45" fill="url(#shadowNew)" stroke="#666666" stroke-width="2"/>
                 </svg>`;
-
             case "full":
                 return `<svg width="${baseSize}" height="${baseSize}" viewBox="0 0 100 100">
                     <defs>
@@ -76,7 +73,6 @@ class Calendar {
                     </defs>
                     <circle cx="50" cy="50" r="45" fill="url(#shadowFull)" stroke="#666666" stroke-width="2"/>
                 </svg>`;
-
             case "first quarter":
                 return `<svg width="${baseSize}" height="${baseSize}" viewBox="0 0 100 100">
                     <defs>
@@ -88,7 +84,6 @@ class Calendar {
                     <circle cx="50" cy="50" r="45" fill="#444444" stroke="#666666" stroke-width="2"/>
                     <path d="M50 5 A45 45 0 0 1 50 95" fill="url(#shadowFirst)"/>
                 </svg>`;
-
             case "last quarter":
                 return `<svg width="${baseSize}" height="${baseSize}" viewBox="0 0 100 100">
                     <defs>
@@ -100,14 +95,12 @@ class Calendar {
                     <circle cx="50" cy="50" r="45" fill="#444444" stroke="#666666" stroke-width="2"/>
                     <path d="M50 5 A45 45 0 0 0 50 95" fill="url(#shadowLast)"/>
                 </svg>`;
-
             default:
-                return ""; // Return empty string for invalid or empty phase
+                return "";
         }
     }
 
     setupEventListeners() {
-        // Wheel event for month navigation
         this.container.parentElement.addEventListener("wheel", (e) => {
             if (e.deltaY > 0) {
                 this.changeMonth(1);
@@ -117,7 +110,6 @@ class Calendar {
             e.preventDefault();
         });
 
-        // Keyboard navigation
         document.addEventListener("keydown", (e) => {
             switch (e.key) {
                 case "ArrowUp":
@@ -139,7 +131,6 @@ class Calendar {
             }
         });
 
-        // Date picker in status bar
         this.dateDisplay.innerHTML = this.createDatePicker();
         this.dateDisplay.addEventListener("change", (e) => {
             if (e.target.id === "month-select") {
@@ -151,7 +142,6 @@ class Calendar {
             }
         });
 
-        // Help modal functionality
         const modal = document.getElementById("help-modal");
         const helpButton = document.querySelector(".help-button");
         const closeButton = modal.querySelector(".modal-close");
@@ -176,7 +166,6 @@ class Calendar {
             }
         });
 
-        // Mobile-specific event handlers
         if (window.matchMedia("(max-width: 768px)").matches) {
             this.setupMobileEvents();
         }
@@ -188,7 +177,6 @@ class Calendar {
         let startY, currentY;
         let isDragging = false;
 
-        // Modify day click handler for mobile
         this.container.addEventListener("click", (e) => {
             const dayElement = e.target.closest(".day");
             if (dayElement && !isDragging) {
@@ -197,7 +185,6 @@ class Calendar {
             }
         });
 
-        // Improved touch handling for aside
         aside.addEventListener("touchstart", (e) => {
             startY = e.touches[0].clientY;
             currentY = aside.getBoundingClientRect().top;
@@ -208,8 +195,8 @@ class Calendar {
         aside.addEventListener("touchmove", (e) => {
             isDragging = true;
             const deltaY = e.touches[0].clientY - startY;
-            if (deltaY > 0) { // Only allow downward swipe
-                e.preventDefault(); // Prevent default only when swiping down
+            if (deltaY > 0) {
+                e.preventDefault();
                 const newTransform = deltaY;
                 aside.style.transform = `translateY(${newTransform}px)`;
                 overlay.style.opacity = 1 -
@@ -221,7 +208,7 @@ class Calendar {
             aside.style.transition = "transform 0.3s ease";
             const deltaY = e.changedTouches[0].clientY - startY;
 
-            if (deltaY > window.innerHeight * 0.2) { // 20% threshold for dismiss
+            if (deltaY > window.innerHeight * 0.2) {
                 aside.style.transform = "translateY(100%)";
                 setTimeout(() => {
                     aside.classList.remove("active");
@@ -232,13 +219,11 @@ class Calendar {
                 aside.style.transform = "";
             }
 
-            // Reset after animation
             setTimeout(() => {
                 aside.style.transition = "";
             }, 300);
         });
 
-        // Close on overlay click
         overlay.addEventListener("click", () => {
             aside.style.transition = "transform 0.3s ease";
             aside.style.transform = "translateY(100%)";
@@ -249,6 +234,7 @@ class Calendar {
             }, 300);
         });
     }
+
     changeMonth(delta) {
         this.currentDate.setMonth(this.currentDate.getMonth() + delta);
         this.render();
@@ -258,21 +244,10 @@ class Calendar {
         this.currentDate.setFullYear(this.currentDate.getFullYear() + delta);
         this.render();
     }
-    // changeMonth(delta) {
-    //     this.currentDate.setMonth(this.currentDate.getMonth() + delta);
-    //     this.render();
-    // }
-    //
-    // changeYear(delta) {
-    //     this.currentDate.setFullYear(this.currentDate.getFullYear() + delta);
-    //     this.render();
-    // }
 
     createDatePicker() {
         const currentYear = this.currentDate.getFullYear();
         const currentMonth = this.currentDate.getMonth();
-
-        // Create year options (20 years before and after current year)
         const yearOptions = Array.from(
             { length: 41 },
             (_, i) => currentYear - 20 + i,
@@ -284,7 +259,6 @@ class Calendar {
             )
             .join("");
 
-        // Create month options
         const months = [
             "January",
             "February",
@@ -320,15 +294,11 @@ class Calendar {
     getMonthData(date) {
         const year = date.getFullYear();
         const month = date.getMonth();
-
         const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-
         const firstDayToShow = new Date(firstDay);
         firstDayToShow.setDate(
             firstDayToShow.getDate() - firstDayToShow.getDay(),
         );
-
         const days = [];
         const currentDay = new Date(firstDayToShow);
 
@@ -352,13 +322,12 @@ class Calendar {
         }).format(date);
     }
 
-    createDayContent(dayData, dayNumber) {
+    createDayContent(dayData, dayNumber, date) {
         const content = document.createElement("div");
         content.style.height = "100%";
         content.style.display = "flex";
         content.style.flexDirection = "column";
 
-        // Add day name as data attribute for mobile
         const dayNames = [
             "Sunday",
             "Monday",
@@ -373,14 +342,12 @@ class Calendar {
             dayNames[date.getDay()],
         );
 
-        // Day number
         const numberDiv = document.createElement("div");
         numberDiv.className = "day-number";
         numberDiv.textContent = dayNumber;
         content.appendChild(numberDiv);
 
         if (dayData) {
-            // Name
             if (dayData.name) {
                 const nameDiv = document.createElement("div");
                 nameDiv.className = "day-name";
@@ -388,7 +355,6 @@ class Calendar {
                 content.appendChild(nameDiv);
             }
 
-            // Rank
             if (dayData.rank) {
                 const rankDiv = document.createElement("div");
                 rankDiv.className = "day-rank";
@@ -396,7 +362,6 @@ class Calendar {
                 content.appendChild(rankDiv);
             }
 
-            // Commemorations
             const commsDiv = document.createElement("div");
             commsDiv.className = "commemorations";
             ["com_1", "com_2", "com_3"].forEach((com) => {
@@ -409,7 +374,6 @@ class Calendar {
             });
             content.appendChild(commsDiv);
 
-            // Moon phase
             if (dayData["moon-phase"]) {
                 const moonDiv = document.createElement("div");
                 moonDiv.className = "moon-phase";
@@ -422,39 +386,88 @@ class Calendar {
 
         return content;
     }
-    async initializeData() {
-        this.calendarData = this.loadCalendarData();
-        // Initial render with localStorage data
-        this.render();
+
+    hasYearData(year) {
+        const yearPrefix = `${year}-`;
+        return Object.keys(this.calendarData).some((key) =>
+            key.startsWith(yearPrefix)
+        );
     }
 
-    async fetchJson(date) {
+    async prefetchYearData(year) {
+        if (this.fetchingYears.has(year) || this.hasYearData(year)) {
+            return;
+        }
+
+        this.fetchingYears.add(year);
         try {
-            // NOTE: date can either be forwards or backwards...
-            const response = await fetch(
-                `${this.scriptRoot}/${date.slice(0, 4)}`,
-            );
+            const response = await fetch(`${this.scriptRoot}/${year}`);
             const json = await response.json();
-            // Update both memory and localStorage
             this.calendarData = { ...this.calendarData, ...json };
             localStorage.setItem("data", JSON.stringify(this.calendarData));
-            return json;
         } catch (e) {
-            console.error("Error fetching calendar data:", e);
-            return null;
+            console.error(`Error fetching data for year ${year}:`, e);
+        } finally {
+            this.fetchingYears.delete(year);
+        }
+    }
+
+    async initializeData() {
+        this.calendarData = this.loadCalendarData();
+        const currentYear = this.currentDate.getFullYear();
+        if (!this.hasYearData(currentYear)) {
+            await this.prefetchYearData(currentYear);
         }
     }
 
     async getDayData(dateId) {
-        if (!this.calendarData[dateId]) {
-            // If data doesn't exist, fetch it
-            await this.fetchJson(dateId);
+        if (this.calendarData[dateId]) {
+            return this.calendarData[dateId];
         }
+
+        const storedData = this.loadCalendarData();
+        if (storedData[dateId]) {
+            this.calendarData = { ...this.calendarData, ...storedData };
+            return storedData[dateId];
+        }
+
+        const year = dateId.slice(0, 4);
+        await this.prefetchYearData(year);
         return this.calendarData[dateId] || {};
     }
 
-    // Update render to handle async data
     async render() {
+        const currentYear = this.currentDate.getFullYear();
+        const monthStart = new Date(this.currentDate);
+        monthStart.setDate(1);
+        const monthEnd = new Date(monthStart);
+        monthEnd.setMonth(monthEnd.getMonth() + 1);
+        monthEnd.setDate(0);
+
+        if (!this.hasYearData(currentYear)) {
+            await this.prefetchYearData(currentYear);
+        }
+
+        const prevMonth = new Date(monthStart);
+        prevMonth.setDate(0);
+        const nextMonth = new Date(monthEnd);
+        nextMonth.setDate(nextMonth.getDate() + 1);
+
+        const years = new Set([
+            currentYear,
+            prevMonth.getFullYear(),
+            nextMonth.getFullYear(),
+        ]);
+
+        await Promise.all(
+            Array.from(years).map((year) => {
+                if (!this.hasYearData(year)) {
+                    return this.prefetchYearData(year);
+                }
+                return Promise.resolve();
+            }),
+        );
+
         this.dateDisplay.textContent = new Intl.DateTimeFormat("en-US", {
             year: "numeric",
             month: "long",
@@ -486,8 +499,8 @@ class Calendar {
                         ? " selected"
                         : "");
 
-                // Create a promise for this day's data
-                const fetchPromise = this.getDayData(dateId).then((dayData) => {
+                if (this.calendarData[dateId]) {
+                    const dayData = this.calendarData[dateId];
                     if (dayData.color) {
                         day.style.backgroundColor = this.getPastelColor(
                             dayData.color,
@@ -500,9 +513,25 @@ class Calendar {
                             dayInfo.date,
                         ),
                     );
-                });
-
-                fetchPromises.push(fetchPromise);
+                } else {
+                    const fetchPromise = this.getDayData(dateId).then(
+                        (dayData) => {
+                            if (dayData.color) {
+                                day.style.backgroundColor = this.getPastelColor(
+                                    dayData.color,
+                                );
+                            }
+                            day.appendChild(
+                                this.createDayContent(
+                                    dayData,
+                                    dayInfo.date.getDate(),
+                                    dayInfo.date,
+                                ),
+                            );
+                        },
+                    );
+                    fetchPromises.push(fetchPromise);
+                }
 
                 day.addEventListener("click", async () => {
                     document.querySelectorAll(".day.selected").forEach((el) =>
@@ -518,10 +547,10 @@ class Calendar {
             this.container.appendChild(week);
         }
 
-        // Wait for all fetches to complete
-        await Promise.all(fetchPromises);
+        if (fetchPromises.length > 0) {
+            await Promise.all(fetchPromises);
+        }
 
-        // Handle mobile layout if necessary
         if (window.matchMedia("(max-width: 768px)").matches) {
             this.container.querySelectorAll(".week").forEach((week) => {
                 week.style.display = "block";
@@ -529,81 +558,6 @@ class Calendar {
         }
     }
 
-    // render() {
-    //     this.dateDisplay.textContent = new Intl.DateTimeFormat("en-US", {
-    //         year: "numeric",
-    //         month: "long",
-    //     }).format(this.currentDate);
-    //
-    //     while (this.container.children.length > 1) {
-    //         this.container.removeChild(this.container.lastChild);
-    //     }
-    //
-    //     const days = this.getMonthData(this.currentDate);
-    //
-    //     for (let i = 0; i < 6; i++) {
-    //         const week = document.createElement("div");
-    //         week.className = "week";
-    //
-    //         for (let j = 0; j < 7; j++) {
-    //             const dayIndex = i * 7 + j;
-    //             const dayInfo = days[dayIndex];
-    //             const day = document.createElement("div");
-    //             const dateId = this.formatDateId(dayInfo.date);
-    //             const dayData = this.calendarData[dateId];
-    //
-    //             day.id = dateId;
-    //             day.className = "day" +
-    //                 (dayInfo.isCurrentMonth ? "" : " other-month") +
-    //                 (this.selectedDate &&
-    //                         dayInfo.date.toDateString() ===
-    //                             this.selectedDate.toDateString()
-    //                     ? " selected"
-    //                     : "");
-    //
-    //             if (dayData && dayData.color) {
-    //                 day.style.backgroundColor = this.getPastelColor(
-    //                     dayData.color,
-    //                 );
-    //             }
-    //
-    //             // Updated to pass the date
-    //             day.appendChild(
-    //                 this.createDayContent(
-    //                     dayData,
-    //                     dayInfo.date.getDate(),
-    //                     dayInfo.date,
-    //                 ),
-    //             );
-    //
-    //             day.addEventListener("click", () => {
-    //                 if (
-    //                     !window.matchMedia("(max-width: 768px)").matches ||
-    //                     !isDragging
-    //                 ) {
-    //                     document.querySelectorAll(".day.selected").forEach(
-    //                         (el) => el.classList.remove("selected"),
-    //                     );
-    //                     day.classList.add("selected");
-    //                     this.updateDayDetails(dayInfo.date);
-    //                 }
-    //             });
-    //
-    //             week.appendChild(day);
-    //         }
-    //
-    //         this.container.appendChild(week);
-    //     }
-    //
-    //     // Handle mobile layout if necessary
-    //     if (window.matchMedia("(max-width: 768px)").matches) {
-    //         this.container.querySelectorAll(".week").forEach((week) => {
-    //             week.style.display = "block";
-    //         });
-    //     }
-    // }
-
-    // Update updateDayDetails to handle async data
     async updateDayDetails(date) {
         this.selectedDate = date;
         const dateId = this.formatDateId(date);
@@ -615,42 +569,12 @@ class Calendar {
             <div class="json-view">${JSON.stringify(dayData, null, 2)}</div>
         `;
 
-        // // Reattach help button event listener
-        // const helpButton = this.dayDetails.querySelector(".help-button");
-        // helpButton.addEventListener("click", () => {
-        //     document.getElementById("help-modal").classList.add("active");
-        // });
-
-        // Handle mobile view
         if (window.matchMedia("(max-width: 768px)").matches) {
             document.querySelector("aside").classList.add("active");
             document.querySelector(".mobile-overlay").classList.add("active");
         }
     }
-    // updateDayDetails(date) {
-    //     this.selectedDate = date;
-    //     const dateId = this.formatDateId(date);
-    //     const dayData = this.calendarData[dateId] || {};
-    //
-    //     this.dayDetails.innerHTML = `
-    //         <h2>Day Details</h2>
-    //         <p>${this.formatDate(date)}</p>
-    //         <div class="json-view">${JSON.stringify(dayData, null, 2)}</div>
-    //     `;
-    //
-    //     // Reattach help button event listener
-    //     const helpButton = this.dayDetails.querySelector(".help-button");
-    //     helpButton.addEventListener("click", () => {
-    //         document.getElementById("help-modal").classList.add("active");
-    //     });
-    //
-    //     // Handle mobile view
-    //     if (window.matchMedia("(max-width: 768px)").matches) {
-    //         document.querySelector("aside").classList.add("active");
-    //         document.querySelector(".mobile-overlay").classList.add("active");
-    //     }
-    // }
 }
 
-// Initialize the calendar
 new Calendar();
+
