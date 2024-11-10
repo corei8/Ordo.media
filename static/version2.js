@@ -11,8 +11,68 @@ class Calendar {
         this.touchEndY = 0;
         this.fetchingYears = new Set();
         this.setupEventListeners();
+        this.setupClickHandlers();
         this.initializeData().then(() => {
             this.render();
+        });
+    }
+
+    setupClickHandlers() {
+        document.addEventListener("click", (e) => {
+            const target = e.target;
+
+            // Help modal handling
+            if (target.matches(".help-button")) {
+                document.getElementById("help-modal").classList.add("active");
+                return;
+            }
+
+            if (
+                target.matches(".modal-close") ||
+                target.matches("#help-modal")
+            ) {
+                document.getElementById("help-modal").classList.remove(
+                    "active",
+                );
+                return;
+            }
+
+            // Calendar day handling
+            const dayElement = target.closest(".day");
+            if (dayElement) {
+                document.querySelectorAll(".day.selected").forEach((el) =>
+                    el.classList.remove("selected")
+                );
+                dayElement.classList.add("selected");
+
+                // Get the date from the day's ID
+                const [year, month, day] = dayElement.id.split("-").map((num) =>
+                    parseInt(num)
+                );
+                const date = new Date(year, month - 1, day);
+                this.updateDayDetails(date);
+
+                if (window.matchMedia("(max-width: 768px)").matches) {
+                    document.querySelector("aside").classList.add("active");
+                    document.querySelector(".mobile-overlay").classList.add(
+                        "active",
+                    );
+                }
+                return;
+            }
+
+            // Mobile overlay handling
+            if (target.matches(".mobile-overlay")) {
+                const aside = document.querySelector("aside");
+                aside.style.transition = "transform 0.3s ease";
+                aside.style.transform = "translateY(100%)";
+                setTimeout(() => {
+                    aside.classList.remove("active");
+                    target.classList.remove("active");
+                    aside.style.transform = "";
+                }, 300);
+                return;
+            }
         });
     }
 
@@ -99,7 +159,6 @@ class Calendar {
                 return "";
         }
     }
-
     setupEventListeners() {
         this.container.parentElement.addEventListener("wheel", (e) => {
             if (e.deltaY > 0) {
@@ -128,6 +187,16 @@ class Calendar {
                 case "l":
                     this.changeYear(1);
                     break;
+                case "Escape":
+                    if (
+                        document.getElementById("help-modal").classList
+                            .contains("active")
+                    ) {
+                        document.getElementById("help-modal").classList.remove(
+                            "active",
+                        );
+                    }
+                    break;
             }
         });
 
@@ -142,33 +211,11 @@ class Calendar {
             }
         });
 
-        const modal = document.getElementById("help-modal");
-        const helpButton = document.querySelector(".help-button");
-        const closeButton = modal.querySelector(".modal-close");
-
-        helpButton.addEventListener("click", () => {
-            modal.classList.add("active");
-        });
-
-        closeButton.addEventListener("click", () => {
-            modal.classList.remove("active");
-        });
-
-        modal.addEventListener("click", (e) => {
-            if (e.target === modal) {
-                modal.classList.remove("active");
-            }
-        });
-
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && modal.classList.contains("active")) {
-                modal.classList.remove("active");
-            }
-        });
-
         if (window.matchMedia("(max-width: 768px)").matches) {
             this.setupMobileEvents();
         }
+
+        this.setupClickHandlers();
     }
 
     setupMobileEvents() {
@@ -176,14 +223,6 @@ class Calendar {
         const overlay = document.querySelector(".mobile-overlay");
         let startY, currentY;
         let isDragging = false;
-
-        this.container.addEventListener("click", (e) => {
-            const dayElement = e.target.closest(".day");
-            if (dayElement && !isDragging) {
-                aside.classList.add("active");
-                overlay.classList.add("active");
-            }
-        });
 
         aside.addEventListener("touchstart", (e) => {
             startY = e.touches[0].clientY;
@@ -221,16 +260,6 @@ class Calendar {
 
             setTimeout(() => {
                 aside.style.transition = "";
-            }, 300);
-        });
-
-        overlay.addEventListener("click", () => {
-            aside.style.transition = "transform 0.3s ease";
-            aside.style.transform = "translateY(100%)";
-            setTimeout(() => {
-                aside.classList.remove("active");
-                overlay.classList.remove("active");
-                aside.style.transform = "";
             }, 300);
         });
     }
@@ -533,14 +562,6 @@ class Calendar {
                     fetchPromises.push(fetchPromise);
                 }
 
-                day.addEventListener("click", async () => {
-                    document.querySelectorAll(".day.selected").forEach((el) =>
-                        el.classList.remove("selected")
-                    );
-                    day.classList.add("selected");
-                    await this.updateDayDetails(dayInfo.date);
-                });
-
                 week.appendChild(day);
             }
 
@@ -577,4 +598,3 @@ class Calendar {
 }
 
 new Calendar();
-
